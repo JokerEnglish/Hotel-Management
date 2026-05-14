@@ -7,11 +7,11 @@
 
 Xây dựng hệ thống **Quản lý Chuỗi Khách sạn** hoàn chỉnh — quản lý nhiều chi nhánh khách sạn trong cùng một hệ thống:
 - **Database** chuyên sâu với SQL Server (stored procedures, triggers, views, transactions, indexing)
-- **Backend API** với Node.js + Express để kết nối DB và giao diện
+- **Backend API** với **ASP.NET Core Web API** (.NET 8) để kết nối DB và giao diện
 - **Frontend** với React.js (Vite) để tương tác người dùng
 
 > [!IMPORTANT]
-> Đây là môn **Lập trình Web**, nên trọng tâm sẽ là sự kết hợp hoàn hảo giữa **Frontend (React)**, **Backend (Node.js)** và **Database (SQL Server)**. Giao diện cần mượt mà, UX/UI tốt và API xử lý logic chặt chẽ.
+> Đây là môn **Lập trình Web**, nên trọng tâm sẽ là sự kết hợp hoàn hảo giữa **Frontend (React)**, **Backend (ASP.NET Core Web API)** và **Database (SQL Server)**. Giao diện cần mượt mà, UX/UI tốt và API xử lý logic chặt chẽ.
 
 ---
 
@@ -23,7 +23,7 @@ Xây dựng hệ thống **Quản lý Chuỗi Khách sạn** hoàn chỉnh — q
 ┌─────────────────────────────────────────┐
 │        FRONTEND (React.js + Vite)       │  ← Giao diện người dùng
 ├─────────────────────────────────────────┤
-│          BACKEND (Node.js/Express)      │  ← REST API
+│     BACKEND (ASP.NET Core Web API)      │  ← REST API (.NET 8)
 ├─────────────────────────────────────────┤
 │          DATABASE (SQL Server)          │  ← Trọng tâm đồ án
 └─────────────────────────────────────────┘
@@ -36,25 +36,35 @@ Xây dựng hệ thống **Quản lý Chuỗi Khách sạn** hoàn chỉnh — q
 | **DBMS** | SQL Server | 2022 / Express | [microsoft.com/sql-server](https://www.microsoft.com/en-us/sql-server/sql-server-downloads) |
 | **SQL Client** | SSMS hoặc DBeaver | Latest | [SSMS](https://learn.microsoft.com/en-us/sql/ssms/download-sql-server-management-studio-ssms) |
 | **ERD Design** | dbdiagram.io | Online | [dbdiagram.io](https://dbdiagram.io) — Viết DBML, xuất ảnh |
-| **Backend Runtime** | Node.js | 20 LTS | [nodejs.org](https://nodejs.org) |
-| **Backend Framework** | Express.js | 4.x | REST API |
-| **DB Driver** | mssql | Latest | Kết nối SQL Server từ Node |
+| **Backend Runtime** | .NET SDK | 8.0 LTS | [dotnet.microsoft.com](https://dotnet.microsoft.com/download) |
+| **Backend Framework** | ASP.NET Core Web API | .NET 8 | REST API, Swagger tích hợp sẵn |
+| **ORM / DB Access** | Dapper | Latest | Gọi Stored Procedures từ C# đơn giản, linh hoạt |
+| **DB Driver** | Microsoft.Data.SqlClient | Latest | Kết nối SQL Server từ .NET |
+| **Auth** | ASP.NET Core JWT Bearer | .NET 8 | Xác thực token cho API |
 | **Frontend Framework** | React.js + Vite | 18 + 5.x | Đơn giản, linh hoạt, dễ học |
 | **UI Library** | Ant Design hoặc MUI | Latest | Component quản lý sẵn có (table, form, chart) |
 | **Routing** | React Router DOM | v6 | Điều hướng giữa các trang |
 | **HTTP Client** | Axios | Latest | Gọi REST API từ frontend |
 | **Biểu đồ** | Recharts | Latest | Dashboard doanh thu, công suất |
-| **Code Editor** | VS Code | Latest | Extension: PostgreSQL, ESLint |
-| **API Test** | Thunder Client / Postman | Latest | Test API trước khi kết nối UI |
+| **Code Editor** | Visual Studio 2022 / VS Code | Latest | Extension C#, .NET, REST Client |
+| **API Test** | Swagger UI / Postman | Latest | Swagger tích hợp sẵn trong ASP.NET Core |
 | **Version Control** | Git + GitHub | — | Quản lý source code |
 | **Báo cáo** | Google Docs | — | Viết tài liệu đồ án |
 
-### 2.3. VS Code Extensions cần cài
+### 2.3. Công cụ & Extensions cần cài
 
+**Visual Studio 2022** (khuyến nghị cho ASP.NET Core):
 ```
-- SQL Server (mssql) (Microsoft)  → Chạy SQL ngay trong VS Code
-- ESLint + Prettier           → Format code
-- Thunder Client              → Test REST API
+- Workload: ASP.NET and web development
+- Workload: Data storage and processing (SQL Server)
+```
+
+**VS Code Extensions** (nếu dùng VS Code):
+```
+- C# Dev Kit (Microsoft)      → IntelliSense, debug C#
+- SQL Server (mssql)          → Chạy SQL ngay trong VS Code
+- REST Client                 → Test API trực tiếp trong VS Code
+- ESLint + Prettier           → Format code JS/React
 - GitLens                     → Quản lý Git
 ```
 
@@ -64,43 +74,48 @@ Xây dựng hệ thống **Quản lý Chuỗi Khách sạn** hoàn chỉnh — q
 
 ```
 hotel-management/
-├── database/                   ← TẤT CẢ SCRIPT SQL
-│   ├── 01_schema.sql           → Tạo bảng, constraints
-│   ├── 02_indexes.sql          → Tạo index
-│   ├── 03_views.sql            → Tạo views
-│   ├── 04_stored_procedures.sql→ Stored procedures
-│   ├── 05_triggers.sql         → Triggers
-│   ├── 06_seed_data.sql        → Dữ liệu mẫu
-│   └── 07_roles_permissions.sql→ Phân quyền
+├── database/                        ← TẤT CẢ SCRIPT SQL
+│   ├── 01_schema.sql                → Tạo bảng, constraints
+│   ├── 02_indexes.sql               → Tạo index
+│   ├── 03_views.sql                 → Tạo views
+│   ├── 04_stored_procedures.sql     → Stored procedures
+│   ├── 05_triggers.sql              → Triggers
+│   ├── 06_seed_data.sql             → Dữ liệu mẫu
+│   └── 07_roles_permissions.sql     → Phân quyền
 │
-├── backend/                    ← NODE.JS API
-│   ├── src/
-│   │   ├── config/db.js        → Kết nối SQL Server
-│   │   ├── routes/
-│   │   │   ├── rooms.js        → API phòng
-│   │   │   ├── bookings.js     → API đặt phòng
-│   │   │   ├── customers.js    → API khách hàng
-│   │   │   ├── services.js     → API dịch vụ
-│   │   │   └── reports.js      → API báo cáo
-│   │   └── index.js
-│   └── package.json
+├── backend/                         ← ASP.NET CORE WEB API (.NET 8)
+│   ├── HotelManagement.API/
+│   │   ├── Controllers/
+│   │   │   ├── RoomsController.cs       → API phòng
+│   │   │   ├── BookingsController.cs    → API đặt phòng
+│   │   │   ├── CustomersController.cs   → API khách hàng
+│   │   │   ├── ServicesController.cs    → API dịch vụ
+│   │   │   ├── HotelsController.cs      → API chi nhánh
+│   │   │   └── ReportsController.cs     → API báo cáo
+│   │   ├── Models/                      → Entity/DTO classes (C#)
+│   │   ├── Repositories/                → Gọi Stored Procedures qua Dapper
+│   │   ├── Data/
+│   │   │   └── DbContext.cs             → Kết nối SQL Server
+│   │   ├── Program.cs                   → Cấu hình DI, Swagger, CORS
+│   │   ├── appsettings.json             → ConnectionString SQL Server
+│   │   └── HotelManagement.API.csproj
 │
-├── frontend/                   ← REACT.JS (VITE) UI
+├── frontend/                        ← REACT.JS (VITE) UI
 │   ├── src/
 │   │   ├── pages/
-│   │   │   ├── Dashboard.jsx   → Trang tổng quan
-│   │   │   ├── Hotels.jsx      → Quản lý chi nhánh
-│   │   │   ├── Rooms.jsx       → Quản lý phòng
-│   │   │   ├── Bookings.jsx    → Quản lý đặt phòng
-│   │   │   ├── Customers.jsx   → Quản lý khách hàng
-│   │   │   ├── Staff.jsx       → Quản lý nhân viên
-│   │   │   └── Reports.jsx     → Báo cáo doanh thu
-│   │   ├── components/         → Các component dùng chung
-│   │   ├── services/           → Gọi API (axios)
+│   │   │   ├── Dashboard.jsx        → Trang tổng quan
+│   │   │   ├── Hotels.jsx           → Quản lý chi nhánh
+│   │   │   ├── Rooms.jsx            → Quản lý phòng
+│   │   │   ├── Bookings.jsx         → Quản lý đặt phòng
+│   │   │   ├── Customers.jsx        → Quản lý khách hàng
+│   │   │   ├── Staff.jsx            → Quản lý nhân viên
+│   │   │   └── Reports.jsx          → Báo cáo doanh thu
+│   │   ├── components/              → Các component dùng chung
+│   │   ├── services/                → Gọi API (axios)
 │   │   └── App.jsx
 │   └── package.json
 │
-└── docs/                       ← TÀI LIỆU
+└── docs/                            ← TÀI LIỆU
     ├── ERD.png
     └── BaoCao_DoAn.docx
 ```
@@ -302,15 +317,20 @@ ROLE: Admin | QuanLyChiNhanh | LeTan | NhanVienPhucVu | KeToan
 - [ ] Viết `07_roles_permissions.sql`
 - [ ] Test toàn bộ bằng DBeaver
 
-### 📅 Tuần 6: Backend API
-- [ ] Khởi tạo project Node.js + Express
-- [ ] Kết nối SQL Server qua `mssql`
-- [ ] Viết REST API gọi stored procedures
-- [ ] Test API bằng Thunder Client
+### 📅 Tuần 6: Backend API (ASP.NET Core)
+- [ ] Khởi tạo project: `dotnet new webapi -n HotelManagement.API`
+- [ ] Cài NuGet packages: `Dapper`, `Microsoft.Data.SqlClient`, `Swashbuckle` (Swagger)
+- [ ] Cấu hình `appsettings.json` — ConnectionString SQL Server
+- [ ] Cấu hình CORS trong `Program.cs` để React gọi được API
+- [ ] Viết `DbContext.cs` — mở kết nối SqlConnection
+- [ ] Viết Repositories gọi Stored Procedures qua Dapper
+- [ ] Viết Controllers với các endpoint REST (GET/POST/PUT/DELETE)
+- [ ] Test API bằng Swagger UI (tích hợp sẵn) hoặc Postman
 
 ### 📅 Tuần 7–8: Frontend (React.js + Vite)
 - [ ] Khởi tạo project: `npm create vite@latest frontend -- --template react`
 - [ ] Cài React Router DOM + Axios + Ant Design (hoặc MUI)
+- [ ] Cấu hình Axios baseURL trỏ tới `https://localhost:PORT` (ASP.NET Core)
 - [ ] Xây dựng layout chung + thanh điều hướng
 - [ ] Màn hình Dashboard (biểu đồ Recharts)
 - [ ] Màn hình Quản lý Chi nhánh & Sơ đồ Phòng
@@ -353,9 +373,12 @@ ROLE: Admin | QuanLyChiNhanh | LeTan | NhanVienPhucVu | KeToan
 
 ## 11. Tài liệu Tham khảo
 
+- 📖 [ASP.NET Core Web API](https://learn.microsoft.com/en-us/aspnet/core/web-api/) — Tài liệu chính thức
+- 📖 [.NET 8 Download](https://dotnet.microsoft.com/download/dotnet/8.0) — Cài .NET SDK
+- 📖 [Dapper](https://github.com/DapperLib/Dapper) — Micro ORM gọi Stored Procedures từ C#
+- 📖 [Swagger / Swashbuckle](https://learn.microsoft.com/en-us/aspnet/core/tutorials/web-api-help-pages-using-swagger) — Tích hợp Swagger vào ASP.NET Core
 - 📖 [SQL Server Documentation](https://learn.microsoft.com/en-us/sql/sql-server/)
 - 📖 [dbdiagram.io](https://dbdiagram.io) — Vẽ ERD online
-- 📖 [node-mssql](https://github.com/tediousjs/node-mssql) — Kết nối SQL Server từ Node
 - 📖 [React + Vite](https://vitejs.dev/guide/) — Khởi tạo project React
 - 📖 [React Router DOM](https://reactrouter.com/) — Routing cho React
 - 📖 [Ant Design](https://ant.design/) — Bộ UI component quản lý
