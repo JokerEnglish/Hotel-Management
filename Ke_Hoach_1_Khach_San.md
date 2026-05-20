@@ -7,11 +7,10 @@
 
 Xây dựng hệ thống **Quản lý Khách sạn** hoàn chỉnh gồm:
 - **Database** chuyên sâu với SQL Server (stored procedures, triggers, views, transactions, indexing)
-- **Backend API** với **ASP.NET Core Web API** (.NET 8) để kết nối DB và giao diện
-- **Frontend** với React.js (Vite) để tương tác người dùng
+- **Web Application** với **ASP.NET Core MVC** (.NET 8) — gồm cả Backend lẫn Frontend trong 1 project
 
 > [!IMPORTANT]
-> Đây là môn **Lập trình Web**, nên trọng tâm sẽ là sự kết hợp hoàn hảo giữa **Frontend (React)**, **Backend (ASP.NET Core Web API)** và **Database (SQL Server)**. Giao diện cần mượt mà, UX/UI tốt và API xử lý logic chặt chẽ.
+> Đây là môn **Lập trình Web**, sử dụng mô hình **MVC (Model-View-Controller)** của ASP.NET Core. Giao diện dùng **Razor Views** kết hợp **Bootstrap 5** + **JavaScript** để tạo trải nghiệm người dùng mượt mà. Database dùng **SQL Server** với các kỹ thuật nâng cao.
 
 ---
 
@@ -21,11 +20,14 @@ Xây dựng hệ thống **Quản lý Khách sạn** hoàn chỉnh gồm:
 
 ```
 ┌─────────────────────────────────────────┐
-│        FRONTEND (React.js + Vite)       │  ← Giao diện người dùng
+│   ASP.NET Core MVC (.NET 8)             │
+│   ┌───────────┬───────────┬───────────┐ │
+│   │  Models   │   Views   │Controllers│ │
+│   │  (C#)     │  (Razor)  │   (C#)    │ │
+│   └───────────┴───────────┴───────────┘ │
+│         ↕ Dapper (Micro ORM)            │
 ├─────────────────────────────────────────┤
-│     BACKEND (ASP.NET Core Web API)      │  ← REST API (.NET 8)
-├─────────────────────────────────────────┤
-│          DATABASE (SQL Server)          │  ← Trọng tâm đồ án
+│          DATABASE (SQL Server)          │
 └─────────────────────────────────────────┘
 ```
 
@@ -35,19 +37,16 @@ Xây dựng hệ thống **Quản lý Khách sạn** hoàn chỉnh gồm:
 |----------|---------|-----------|---------|
 | **IDE chính** | Visual Studio 2022 (Community) | Latest | Workload: *ASP.NET and web development* |
 | **DBMS** | SQL Server | 2022 / Express | [microsoft.com/sql-server](https://www.microsoft.com/en-us/sql-server/sql-server-downloads) |
-| **SQL Client** | SSMS hoặc DBeaver | Latest | [SSMS](https://learn.microsoft.com/en-us/sql/ssms/download-sql-server-management-studio-ssms) |
-| **ERD Design** | dbdiagram.io | Online | [dbdiagram.io](https://dbdiagram.io) — Viết DBML, xuất ảnh |
+| **SQL Client** | SSMS 22 | Latest | Quản lý database, chạy SQL scripts |
+| **ERD Design** | dbdiagram.io | Online | [dbdiagram.io](https://dbdiagram.io) — Vẽ ERD, xuất ảnh |
 | **Backend Runtime** | .NET SDK | 8.0 LTS | [dotnet.microsoft.com](https://dotnet.microsoft.com/download/dotnet/8.0) |
-| **Backend Framework** | ASP.NET Core Web API | .NET 8 | REST API, Swagger tích hợp sẵn |
+| **Web Framework** | ASP.NET Core MVC | .NET 8 | Model-View-Controller, Razor Views |
 | **ORM / DB Access** | Dapper | Latest | Gọi Stored Procedures từ C# — đơn giản, linh hoạt |
 | **DB Driver** | Microsoft.Data.SqlClient | Latest | Kết nối SQL Server từ .NET |
-| **Auth** | ASP.NET Core JWT Bearer | .NET 8 | Xác thực token cho API |
-| **Frontend Framework** | React.js + Vite | 18 + 5.x | Đơn giản, linh hoạt, dễ học |
-| **UI Library** | Ant Design hoặc MUI | Latest | Component quản lý sẵn có (table, form, chart) |
-| **Routing** | React Router DOM | v6 | Điều hướng giữa các trang |
-| **HTTP Client** | Axios | Latest | Gọi REST API từ frontend |
-| **Biểu đồ** | Recharts | Latest | Dashboard doanh thu, công suất |
-| **API Test** | Swagger UI / Postman | Latest | Swagger tích hợp sẵn trong ASP.NET Core |
+| **UI Framework** | Bootstrap 5 | 5.3 | Responsive layout, components đẹp sẵn |
+| **Icons** | Bootstrap Icons | Latest | Bộ icon miễn phí |
+| **Biểu đồ** | Chart.js | Latest | Dashboard doanh thu, công suất phòng |
+| **JavaScript** | jQuery (tùy chọn) | 3.x | AJAX, DOM manipulation |
 | **Version Control** | Git + GitHub | — | Quản lý source code |
 | **Báo cáo** | Google Docs | — | Viết tài liệu đồ án |
 
@@ -63,13 +62,13 @@ Xây dựng hệ thống **Quản lý Khách sạn** hoàn chỉnh gồm:
 ```
 - GitHub Extension for Visual Studio   → Kết nối GitHub
 - SQL Server Data Tools (SSDT)         → Tích hợp SQL Server trong VS
-- Bundler & Minifier 2022+             → Tối ưu file tĩnh
+- Bundler & Minifier 2022+             → Tối ưu file CSS/JS
 ```
 
 **Phím tắt hữu ích:**
 ```
-- Ctrl+Shift+B    → Build Solution (kiểm tra lỗi compile)
-- F5              → Chạy Debug (mở Swagger tự động)
+- Ctrl+Shift+B    → Build Solution
+- F5              → Chạy Debug
 - Ctrl+F5         → Chạy không Debug
 - Ctrl+.          → Auto-fix lỗi, thêm using
 - F12             → Go To Definition
@@ -82,87 +81,105 @@ Xây dựng hệ thống **Quản lý Khách sạn** hoàn chỉnh gồm:
 ### 3.1. Cấu trúc Solution (Visual Studio 2022)
 
 ```
-HotelManagement.sln
-├── HotelManagement.API              ← ASP.NET Core Web API (.NET 8)
-├── HotelManagement.Models           ← Class Library: Entities, DTOs
-└── HotelManagement.Repositories     ← Class Library: Data Access (Dapper)
+HotelManagement.sln                          ← Solution
+└── HotelManagement/                         ← 1 project MVC duy nhất
+    ├── Controllers/                         ← Xử lý logic
+    │   ├── HomeController.cs                → Dashboard
+    │   ├── PhongController.cs               → Quản lý phòng
+    │   ├── DatPhongController.cs            → Đặt phòng, check-in/out
+    │   ├── KhachHangController.cs           → Quản lý khách hàng
+    │   ├── DichVuController.cs              → Quản lý dịch vụ
+    │   ├── HoaDonController.cs              → Hóa đơn, thanh toán
+    │   ├── NhanVienController.cs            → Quản lý nhân viên
+    │   ├── BaoCaoController.cs              → Báo cáo doanh thu
+    │   └── AccountController.cs             → Đăng nhập, phân quyền
+    │
+    ├── Models/                              ← Entities + ViewModels
+    │   ├── Entities/
+    │   │   ├── LoaiPhong.cs
+    │   │   ├── Phong.cs
+    │   │   ├── KhachHang.cs
+    │   │   ├── DatPhong.cs
+    │   │   ├── ChiTietDatPhong.cs
+    │   │   ├── DichVu.cs
+    │   │   ├── SuDungDichVu.cs
+    │   │   ├── HoaDon.cs
+    │   │   ├── NhanVien.cs
+    │   │   └── LichLamViec.cs
+    │   └── ViewModels/
+    │       ├── DashboardViewModel.cs
+    │       ├── DatPhongViewModel.cs
+    │       ├── CheckOutViewModel.cs
+    │       └── BaoCaoViewModel.cs
+    │
+    ├── Repositories/                        ← Data Access (Dapper)
+    │   ├── Interfaces/
+    │   │   ├── IPhongRepository.cs
+    │   │   ├── IDatPhongRepository.cs
+    │   │   ├── IKhachHangRepository.cs
+    │   │   └── IBaoCaoRepository.cs
+    │   └── Implementations/
+    │       ├── PhongRepository.cs
+    │       ├── DatPhongRepository.cs
+    │       ├── KhachHangRepository.cs
+    │       └── BaoCaoRepository.cs
+    │
+    ├── Views/                               ← Giao diện Razor (.cshtml)
+    │   ├── Shared/
+    │   │   ├── _Layout.cshtml               → Layout chung (sidebar, navbar)
+    │   │   ├── _LoginLayout.cshtml          → Layout trang đăng nhập
+    │   │   └── _ValidationScriptsPartial.cshtml
+    │   ├── Home/
+    │   │   └── Index.cshtml                 → Dashboard
+    │   ├── Phong/
+    │   │   ├── Index.cshtml                 → Danh sách phòng
+    │   │   ├── SoDo.cshtml                  → Sơ đồ phòng trực quan
+    │   │   ├── Create.cshtml                → Thêm phòng
+    │   │   └── Edit.cshtml                  → Sửa phòng
+    │   ├── DatPhong/
+    │   │   ├── Index.cshtml                 → Danh sách booking
+    │   │   ├── Create.cshtml                → Tạo đặt phòng mới
+    │   │   ├── CheckIn.cshtml               → Màn hình check-in
+    │   │   └── CheckOut.cshtml              → Màn hình check-out + hóa đơn
+    │   ├── KhachHang/
+    │   │   ├── Index.cshtml                 → Danh sách khách hàng
+    │   │   └── Details.cshtml               → Chi tiết + lịch sử lưu trú
+    │   ├── DichVu/
+    │   │   └── Index.cshtml                 → Quản lý dịch vụ
+    │   ├── NhanVien/
+    │   │   ├── Index.cshtml                 → Danh sách nhân viên
+    │   │   └── LichLamViec.cshtml           → Lịch làm việc
+    │   ├── BaoCao/
+    │   │   └── Index.cshtml                 → Báo cáo doanh thu + biểu đồ
+    │   └── Account/
+    │       └── Login.cshtml                 → Trang đăng nhập
+    │
+    ├── wwwroot/                             ← File tĩnh (CSS, JS, Images)
+    │   ├── css/
+    │   │   └── site.css                     → CSS tùy chỉnh
+    │   ├── js/
+    │   │   └── site.js                      → JavaScript tùy chỉnh
+    │   ├── lib/
+    │   │   ├── bootstrap/                   → Bootstrap 5
+    │   │   └── chart.js/                    → Chart.js (biểu đồ)
+    │   └── images/                          → Hình ảnh
+    │
+    ├── Program.cs                           → Cấu hình DI, Auth, Middleware
+    ├── appsettings.json                     → ConnectionString SQL Server
+    └── HotelManagement.csproj               → NuGet packages
 ```
 
-### 3.2. Cấu trúc thư mục chi tiết
+### 3.2. Database Scripts (chạy trên SSMS 22)
 
 ```
-hotel-management/
-├── database/                        ← TẤT CẢ SCRIPT SQL
-│   ├── 01_schema.sql                → Tạo bảng, constraints
-│   ├── 02_indexes.sql               → Tạo index
-│   ├── 03_views.sql                 → Tạo views
-│   ├── 04_stored_procedures.sql     → Stored procedures
-│   ├── 05_triggers.sql              → Triggers
-│   ├── 06_seed_data.sql             → Dữ liệu mẫu
-│   └── 07_roles_permissions.sql     → Phân quyền
-│
-├── backend/                         ← ASP.NET CORE WEB API (.NET 8)
-│   ├── HotelManagement.API/
-│   │   ├── Controllers/
-│   │   │   ├── AuthController.cs       → POST /api/auth/login
-│   │   │   ├── RoomsController.cs      → API phòng
-│   │   │   ├── BookingsController.cs   → API đặt phòng
-│   │   │   ├── CustomersController.cs  → API khách hàng
-│   │   │   ├── ServicesController.cs   → API dịch vụ
-│   │   │   ├── StaffController.cs      → API nhân viên
-│   │   │   └── ReportsController.cs    → API báo cáo
-│   │   ├── Program.cs                  → Cấu hình DI, Swagger, CORS, JWT
-│   │   ├── appsettings.json            → ConnectionString SQL Server
-│   │   └── HotelManagement.API.csproj
-│   │
-│   ├── HotelManagement.Models/
-│   │   ├── Entities/                   → Entity classes (C#)
-│   │   │   ├── LoaiPhong.cs
-│   │   │   ├── Phong.cs
-│   │   │   ├── KhachHang.cs
-│   │   │   ├── DatPhong.cs
-│   │   │   ├── ChiTietDatPhong.cs
-│   │   │   ├── DichVu.cs
-│   │   │   ├── SuDungDichVu.cs
-│   │   │   ├── HoaDon.cs
-│   │   │   ├── NhanVien.cs
-│   │   │   └── LichLamViec.cs
-│   │   └── DTOs/                       → Data Transfer Objects
-│   │       ├── DatPhongDto.cs
-│   │       ├── CheckInDto.cs
-│   │       ├── CheckOutDto.cs
-│   │       ├── BaoCaoDto.cs
-│   │       └── AuthDto.cs
-│   │
-│   └── HotelManagement.Repositories/
-│       ├── Interfaces/
-│       │   ├── IPhongRepository.cs
-│       │   ├── IDatPhongRepository.cs
-│       │   ├── IKhachHangRepository.cs
-│       │   └── IBaoCaoRepository.cs
-│       └── Implementations/
-│           ├── PhongRepository.cs
-│           ├── DatPhongRepository.cs
-│           ├── KhachHangRepository.cs
-│           └── BaoCaoRepository.cs
-│
-├── frontend/                        ← REACT.JS (VITE) UI
-│   ├── src/
-│   │   ├── pages/
-│   │   │   ├── Dashboard.jsx        → Trang tổng quan
-│   │   │   ├── Rooms.jsx            → Quản lý phòng
-│   │   │   ├── Bookings.jsx         → Quản lý đặt phòng
-│   │   │   ├── Customers.jsx        → Quản lý khách hàng
-│   │   │   ├── Staff.jsx            → Quản lý nhân viên
-│   │   │   └── Reports.jsx          → Báo cáo doanh thu
-│   │   ├── components/              → Các component dùng chung
-│   │   ├── services/                → Gọi API (axios)
-│   │   └── App.jsx
-│   └── package.json
-│
-└── docs/                            ← TÀI LIỆU
-    ├── ERD.png
-    └── BaoCao_DoAn.docx
+database/
+├── 01_schema.sql                → Tạo 10 bảng, constraints
+├── 02_indexes.sql               → Tạo index
+├── 03_views.sql                 → 6 views
+├── 04_stored_procedures.sql     → 6 stored procedures
+├── 05_triggers.sql              → 5 triggers
+├── 06_seed_data.sql             → Dữ liệu mẫu
+└── 07_roles_permissions.sql     → Phân quyền
 ```
 
 ---
@@ -280,40 +297,22 @@ v_KhachHangVIP                -- Khách hàng VIP với điểm tích lũy cao n
 
 ---
 
-## 7. Backend — ASP.NET Core Web API
+## 7. Cấu hình ASP.NET Core MVC
 
-### 7.1. Khởi tạo Solution trong Visual Studio 2022
+### 7.1. Khởi tạo Project trong Visual Studio 2022
 
-**Bước 1 — Tạo Solution trống:**
 ```
-File → New → Project → "Blank Solution"
-Tên Solution: HotelManagement
-```
-
-**Bước 2 — Thêm Project API:**
-```
-Chuột phải Solution → Add → New Project
-Chọn: "ASP.NET Core Web API"
-Tên: HotelManagement.API
-Framework: .NET 8.0
-Options:
-  ✅ Enable OpenAPI support (Swagger)
-  ✅ Use controllers
-```
-
-**Bước 3 — Thêm Class Libraries:**
-```
-Add → New Project → "Class Library (.NET)"
-Tên lần lượt:
-  - HotelManagement.Models
-  - HotelManagement.Repositories
-Framework: .NET 8.0
-```
-
-**Bước 4 — Thêm Project References:**
-```
-HotelManagement.API          → References: Models, Repositories
-HotelManagement.Repositories → References: Models
+Bước 1: File → New → Project
+Bước 2: Chọn "ASP.NET Core Web App (Model-View-Controller)"
+Bước 3: Điền thông tin:
+   - Project name: HotelManagement
+   - Location: C:\Visual tim (hoặc thư mục bạn chọn)
+   - Solution name: HotelManagement
+Bước 4: Next → Chọn:
+   - Framework: .NET 8.0
+   - Authentication type: None (tự làm)
+   - ✅ Configure for HTTPS
+   - ✅ Do not use top-level statements
 ```
 
 ### 7.2. NuGet Packages cần cài
@@ -321,9 +320,9 @@ HotelManagement.Repositories → References: Models
 > **Tools → NuGet Package Manager → Package Manager Console**
 
 ```powershell
-Install-Package Dapper -ProjectName HotelManagement.Repositories
-Install-Package Microsoft.Data.SqlClient -ProjectName HotelManagement.Repositories
-Install-Package Microsoft.AspNetCore.Authentication.JwtBearer -ProjectName HotelManagement.API
+Install-Package Dapper
+Install-Package Microsoft.Data.SqlClient
+Install-Package Microsoft.AspNetCore.Authentication.Cookies
 ```
 
 ### 7.3. Cấu hình appsettings.json
@@ -332,12 +331,6 @@ Install-Package Microsoft.AspNetCore.Authentication.JwtBearer -ProjectName Hotel
 {
   "ConnectionStrings": {
     "DefaultConnection": "Server=localhost\\SQLEXPRESS;Database=HotelManagementDB;Trusted_Connection=True;TrustServerCertificate=True;"
-  },
-  "JwtSettings": {
-    "SecretKey": "your-super-secret-key-minimum-32-chars",
-    "Issuer": "HotelManagementAPI",
-    "Audience": "HotelManagementClient",
-    "ExpiryMinutes": 60
   },
   "Logging": {
     "LogLevel": {
@@ -352,30 +345,17 @@ Install-Package Microsoft.AspNetCore.Authentication.JwtBearer -ProjectName Hotel
 ### 7.4. Cấu hình Program.cs
 
 ```csharp
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.IdentityModel.Tokens;
-using System.Text;
+using Microsoft.AspNetCore.Authentication.Cookies;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// 1. Controllers + Swagger
-builder.Services.AddControllers();
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+// 1. MVC
+builder.Services.AddControllersWithViews();
 
-// 2. CORS — cho phép React gọi API
-builder.Services.AddCors(options =>
-{
-    options.AddPolicy("AllowReact", policy =>
-        policy.WithOrigins("http://localhost:5173") // Vite default port
-              .AllowAnyMethod()
-              .AllowAnyHeader());
-});
-
-// 3. Connection String
+// 2. Connection String
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 
-// 4. Đăng ký Repositories (Dependency Injection)
+// 3. Đăng ký Repositories (Dependency Injection)
 builder.Services.AddScoped<IPhongRepository>(sp =>
     new PhongRepository(connectionString!));
 builder.Services.AddScoped<IDatPhongRepository>(sp =>
@@ -384,37 +364,34 @@ builder.Services.AddScoped<IKhachHangRepository>(sp =>
     new KhachHangRepository(connectionString!));
 // ... thêm các repository khác
 
-// 5. JWT Authentication
-var jwtSettings = builder.Configuration.GetSection("JwtSettings");
-builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-    .AddJwtBearer(options =>
+// 4. Cookie Authentication
+builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+    .AddCookie(options =>
     {
-        options.TokenValidationParameters = new TokenValidationParameters
-        {
-            ValidateIssuer = true,
-            ValidateAudience = true,
-            ValidateLifetime = true,
-            ValidateIssuerSigningKey = true,
-            ValidIssuer = jwtSettings["Issuer"],
-            ValidAudience = jwtSettings["Audience"],
-            IssuerSigningKey = new SymmetricSecurityKey(
-                Encoding.UTF8.GetBytes(jwtSettings["SecretKey"]!))
-        };
+        options.LoginPath = "/Account/Login";
+        options.AccessDeniedPath = "/Account/AccessDenied";
+        options.ExpireTimeSpan = TimeSpan.FromHours(8);
     });
 
 var app = builder.Build();
 
 // Middleware pipeline
-if (app.Environment.IsDevelopment())
+if (!app.Environment.IsDevelopment())
 {
-    app.UseSwagger();
-    app.UseSwaggerUI();
+    app.UseExceptionHandler("/Home/Error");
+    app.UseHsts();
 }
 
-app.UseCors("AllowReact");
+app.UseHttpsRedirection();
+app.UseStaticFiles();
+app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();
-app.MapControllers();
+
+app.MapControllerRoute(
+    name: "default",
+    pattern: "{controller=Home}/{action=Index}/{id?}");
+
 app.Run();
 ```
 
@@ -423,7 +400,6 @@ app.Run();
 ```csharp
 using Dapper;
 using Microsoft.Data.SqlClient;
-using HotelManagement.Models.DTOs;
 
 namespace HotelManagement.Repositories;
 
@@ -436,15 +412,15 @@ public class DatPhongRepository : IDatPhongRepository
         _connectionString = connectionString;
     }
 
-    public async Task<int> DatPhongAsync(DatPhongDto dto)
+    public async Task<int> DatPhongAsync(DatPhong datPhong)
     {
         using var conn = new SqlConnection(_connectionString);
         var parameters = new DynamicParameters();
-        parameters.Add("@MaKH", dto.MaKH);
-        parameters.Add("@NgayDen", dto.NgayDen);
-        parameters.Add("@NgayDi", dto.NgayDi);
-        parameters.Add("@MaLoaiPhong", dto.MaLoaiPhong);
-        parameters.Add("@SoNguoi", dto.SoNguoi);
+        parameters.Add("@MaKH", datPhong.MaKH);
+        parameters.Add("@NgayDen", datPhong.NgayDen);
+        parameters.Add("@NgayDi", datPhong.NgayDi);
+        parameters.Add("@MaLoaiPhong", datPhong.MaLoaiPhong);
+        parameters.Add("@SoNguoi", datPhong.SoNguoiLon);
         parameters.Add("@MaDatPhong", dbType: System.Data.DbType.Int32,
                         direction: System.Data.ParameterDirection.Output);
 
@@ -458,140 +434,182 @@ public class DatPhongRepository : IDatPhongRepository
 ### 7.6. Ví dụ Controller
 
 ```csharp
-[ApiController]
-[Route("api/[controller]")]
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+
+namespace HotelManagement.Controllers;
+
 [Authorize]
-public class DatPhongController : ControllerBase
+public class DatPhongController : Controller
 {
     private readonly IDatPhongRepository _repo;
+    private readonly IPhongRepository _phongRepo;
 
-    public DatPhongController(IDatPhongRepository repo)
+    public DatPhongController(IDatPhongRepository repo, IPhongRepository phongRepo)
     {
         _repo = repo;
+        _phongRepo = phongRepo;
     }
 
+    // GET: /DatPhong
+    public async Task<IActionResult> Index()
+    {
+        var bookings = await _repo.GetAllAsync();
+        return View(bookings);
+    }
+
+    // GET: /DatPhong/Create
+    public async Task<IActionResult> Create()
+    {
+        ViewBag.PhongTrong = await _phongRepo.GetPhongTrongAsync();
+        return View();
+    }
+
+    // POST: /DatPhong/Create
     [HttpPost]
-    public async Task<IActionResult> DatPhong([FromBody] DatPhongDto dto)
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Create(DatPhong datPhong)
     {
-        var maDatPhong = await _repo.DatPhongAsync(dto);
-        return Ok(new { Success = true, MaDatPhong = maDatPhong });
+        if (ModelState.IsValid)
+        {
+            await _repo.DatPhongAsync(datPhong);
+            return RedirectToAction(nameof(Index));
+        }
+        return View(datPhong);
     }
 
-    [HttpPut("{id}/checkin")]
-    public async Task<IActionResult> CheckIn(int id, [FromBody] CheckInDto dto)
+    // POST: /DatPhong/CheckIn/5
+    [HttpPost]
+    public async Task<IActionResult> CheckIn(int id)
     {
-        await _repo.CheckInAsync(id, dto.NhanVienXuLy);
-        return Ok(new { Success = true });
-    }
-
-    [HttpPut("{id}/checkout")]
-    public async Task<IActionResult> CheckOut(int id, [FromBody] CheckOutDto dto)
-    {
-        var hoaDon = await _repo.CheckOutAsync(id, dto.PhuongThucTT);
-        return Ok(hoaDon);
+        await _repo.CheckInAsync(id, User.Identity.Name);
+        return RedirectToAction(nameof(Index));
     }
 }
 ```
 
+### 7.7. Ví dụ Razor View (Danh sách Booking)
+
+```html
+@model IEnumerable<DatPhong>
+
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="bi bi-calendar-check"></i> Danh sách Đặt phòng</h2>
+        <a asp-action="Create" class="btn btn-primary">
+            <i class="bi bi-plus-lg"></i> Đặt phòng mới
+        </a>
+    </div>
+
+    <div class="card shadow-sm">
+        <div class="card-body">
+            <table class="table table-hover">
+                <thead class="table-dark">
+                    <tr>
+                        <th>Mã</th>
+                        <th>Khách hàng</th>
+                        <th>Ngày đến</th>
+                        <th>Ngày đi</th>
+                        <th>Trạng thái</th>
+                        <th>Thao tác</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td>@item.MaDatPhong</td>
+                            <td>@item.TenKhachHang</td>
+                            <td>@item.NgayDen.ToString("dd/MM/yyyy")</td>
+                            <td>@item.NgayDi.ToString("dd/MM/yyyy")</td>
+                            <td>
+                                <span class="badge bg-@item.BadgeColor">
+                                    @item.TrangThai
+                                </span>
+                            </td>
+                            <td>
+                                <a asp-action="CheckIn" asp-route-id="@item.MaDatPhong"
+                                   class="btn btn-sm btn-success">Check-in</a>
+                                <a asp-action="CheckOut" asp-route-id="@item.MaDatPhong"
+                                   class="btn btn-sm btn-warning">Check-out</a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+```
+
 ---
 
-## 8. Giao diện (Frontend)
+## 8. Giao diện (Razor Views + Bootstrap 5)
 
-### 8.1. Khởi tạo React + Vite (chạy song song với API)
+### 8.1. Các màn hình chính
 
-> React không chạy trong Visual Studio, dùng terminal riêng hoặc VS Code
+| Màn hình | Controller/Action | Chức năng |
+|----------|-------------------|-----------|
+| **Đăng nhập** | Account/Login | Đăng nhập theo vai trò |
+| **Dashboard** | Home/Index | Thống kê doanh thu, công suất, khách đang ở |
+| **Quản lý Phòng** | Phong/Index | Danh sách phòng, thêm/sửa/xóa |
+| **Sơ đồ Phòng** | Phong/SoDo | Hiển thị phòng theo màu trạng thái |
+| **Đặt Phòng** | DatPhong/Create | Tìm phòng trống, tạo booking |
+| **Danh sách Booking** | DatPhong/Index | Xem & duyệt đặt phòng, check-in |
+| **Check-out** | DatPhong/CheckOut | Dịch vụ phát sinh, xuất hóa đơn |
+| **Khách hàng** | KhachHang/Index | Danh sách, điểm tích lũy, lịch sử |
+| **Dịch vụ** | DichVu/Index | Quản lý danh mục dịch vụ |
+| **Báo cáo** | BaoCao/Index | Doanh thu theo tháng (Chart.js) |
+| **Nhân viên** | NhanVien/Index | Quản lý nhân viên |
+| **Lịch làm việc** | NhanVien/LichLamViec | Phân ca sáng/chiều/đêm |
 
-```powershell
-# Trong thư mục gốc dự án
-cd frontend
-npm create vite@latest . -- --template react
-npm install
-npm install react-router-dom axios antd recharts
-
-# Chạy dev server
-npm run dev
-# → http://localhost:5173
-```
-
-**Cấu hình Axios trỏ vào ASP.NET Core API:**
-```javascript
-// src/services/api.js
-import axios from 'axios';
-
-const api = axios.create({
-  baseURL: 'http://localhost:5000/api',
-  headers: { 'Content-Type': 'application/json' }
-});
-
-api.interceptors.request.use(config => {
-  const token = localStorage.getItem('token');
-  if (token) config.headers.Authorization = `Bearer ${token}`;
-  return config;
-});
-
-export default api;
-```
-
-### 8.2. Các màn hình chính
-
-| Màn hình | Chức năng | Route |
-|----------|-----------|-------|
-| **Login** | Đăng nhập, xác thực JWT | `/login` |
-| **Dashboard** | Thống kê doanh thu, công suất phòng, khách đang ở | `/dashboard` |
-| **Quản lý Phòng** | Danh sách phòng, xem sơ đồ phòng trực quan | `/rooms` |
-| **Đặt Phòng** | Tìm phòng trống, tạo booking mới | `/bookings/new` |
-| **Danh sách Booking** | Xem & duyệt đặt phòng, check-in | `/bookings` |
-| **Check-out** | Xem dịch vụ phát sinh, xuất hóa đơn | `/bookings/[id]/checkout` |
-| **Khách hàng** | Danh sách, điểm tích lũy, lịch sử lưu trú | `/customers` |
-| **Dịch vụ** | Quản lý danh mục dịch vụ | `/services` |
-| **Báo cáo** | Doanh thu theo tháng, công suất phòng | `/reports` |
-| **Nhân viên** | Quản lý lễ tân & phục vụ | `/staff` |
-| **Lịch làm việc** | Phân ca lễ tân / phục vụ (sáng, chiều, đêm) | `/staff/schedule` |
+### 8.2. UI Highlights
+- 🎨 **Bootstrap 5** — Responsive, giao diện hiện đại
+- 🗺️ **Sơ đồ phòng trực quan** — Hiển thị trạng thái phòng theo màu sắc
+- 📊 **Dashboard với biểu đồ** — Chart.js (doanh thu, công suất phòng)
+- 🧾 **In hóa đơn** — Xuất hóa đơn khi checkout
+- 🔐 **Phân quyền** — Hiển thị menu theo vai trò (Quản lý, Lễ tân, Phục vụ...)
 
 ---
 
 ## 9. Kế hoạch Thực hiện — 5 Tuần
 
-### 📅 Tuần 1: Thiết kế Database + Khởi tạo Backend
+### 📅 Tuần 1: Thiết kế Database + Khởi tạo Project
 - [ ] Vẽ ERD trên dbdiagram.io & Chuẩn hóa
 - [ ] Viết `01_schema.sql` — tạo 10 bảng, constraints
 - [ ] Viết `02_indexes.sql`
 - [ ] Viết `06_seed_data.sql` — dữ liệu mẫu
-- [ ] Khởi tạo Solution trong Visual Studio 2022 (3 projects)
-- [ ] Cài NuGet packages: Dapper, SqlClient, JwtBearer
+- [ ] Tạo project MVC trong Visual Studio 2022
+- [ ] Cài NuGet packages: Dapper, SqlClient, Authentication.Cookies
 - [ ] Cấu hình `appsettings.json` + `Program.cs`
+- [ ] Tạo layout chung `_Layout.cshtml` (sidebar + navbar Bootstrap 5)
 
-### 📅 Tuần 2: Database nâng cao + Backend API
+### 📅 Tuần 2: Database nâng cao + Models & Repositories
 - [ ] Viết `03_views.sql` — 6 views
 - [ ] Viết `04_stored_procedures.sql` — 6 SPs
 - [ ] Viết `05_triggers.sql` — 5 triggers
 - [ ] Viết `07_roles_permissions.sql`
-- [ ] Viết Models/Entities (10 entities) + DTOs
+- [ ] Viết Models/Entities (10 entities) + ViewModels
 - [ ] Viết Repositories gọi Stored Procedures qua Dapper
-- [ ] Viết Controllers (7 controllers)
-- [ ] Test API bằng Swagger UI
+- [ ] Tạo trang Login + Cookie Authentication
 
-### 📅 Tuần 3: Frontend — Layout & Chức năng chính
-- [ ] Khởi tạo React + Vite: `npm create vite@latest frontend -- --template react`
-- [ ] Cài React Router DOM + Axios + Ant Design + Recharts
-- [ ] Cấu hình Axios baseURL trỏ tới ASP.NET Core API
-- [ ] Xây dựng layout chung + thanh điều hướng (Sidebar)
-- [ ] Trang Login + JWT token flow
-- [ ] Trang Dashboard (biểu đồ Recharts)
-- [ ] Trang Quản lý Phòng + Sơ đồ phòng trực quan
+### 📅 Tuần 3: Controllers + Views — Chức năng chính
+- [ ] Dashboard (Home/Index) — thống kê + biểu đồ Chart.js
+- [ ] Quản lý Phòng — CRUD + Sơ đồ phòng trực quan
+- [ ] Đặt phòng — tìm phòng trống, tạo booking
+- [ ] Danh sách Booking — xem, duyệt, check-in
 
-### 📅 Tuần 4: Frontend — Nghiệp vụ & Báo cáo
-- [ ] Trang Đặt phòng + Tìm phòng trống
-- [ ] Trang Danh sách Booking + Check-in
-- [ ] Trang Check-out + Hóa đơn
-- [ ] Trang Quản lý Khách hàng
-- [ ] Trang Quản lý Dịch vụ
-- [ ] Trang Quản lý Nhân viên + Lịch làm việc
-- [ ] Trang Báo cáo doanh thu
+### 📅 Tuần 4: Views — Nghiệp vụ còn lại
+- [ ] Check-out + Hóa đơn
+- [ ] Quản lý Khách hàng — danh sách, điểm tích lũy, lịch sử
+- [ ] Quản lý Dịch vụ
+- [ ] Quản lý Nhân viên + Lịch làm việc
+- [ ] Báo cáo doanh thu (Chart.js)
 
 ### 📅 Tuần 5: Hoàn thiện & Báo cáo
 - [ ] Test tích hợp toàn bộ luồng (Book → CheckIn → CheckOut → Invoice)
 - [ ] Fix bug, tối ưu UI/UX
+- [ ] Phân quyền theo vai trò (Quản lý, Lễ tân, Phục vụ, Kế toán)
 - [ ] Viết báo cáo đồ án (Word/Google Docs)
 - [ ] Chuẩn bị slide thuyết trình + demo
 
@@ -602,26 +620,25 @@ export default api;
 | Tiêu chí | Trọng số | Nội dung |
 |----------|----------|---------|
 | Frontend UI/UX | 30% | Giao diện đẹp, responsive, trải nghiệm người dùng tốt |
-| Backend API & Logic | 30% | API chuẩn REST, xử lý logic nghiệp vụ tốt |
+| Backend API & Logic | 30% | MVC chuẩn, xử lý logic nghiệp vụ tốt |
 | Database Design | 20% | Đúng quan hệ, chuẩn hóa, thiết kế bảng hợp lý |
 | Tính năng hệ thống | 10% | Đầy đủ các chức năng quản lý chính |
 | Báo cáo & Demo | 10% | Rõ ràng, demo live mượt mà |
 
 ---
 
-## 11. Lưu ý Quan trọng khi Dùng Visual Studio 2022
+## 11. Lưu ý Quan trọng
 
 > [!IMPORTANT]
 > - Luôn **Build Solution** (`Ctrl+Shift+B`) trước khi chạy để kiểm tra lỗi compile
-> - Dùng **Solution Explorer** để quản lý files, không tạo file ngoài VS
 > - **Connection String** phải khớp tên SQL Server instance (thường là `localhost\SQLEXPRESS`)
-> - Bật **Mixed Mode Authentication** trong SQL Server nếu dùng SQL login
+> - Mở **SSMS 22** để chạy các file SQL scripts tạo database trước khi chạy web
 
 > [!TIP]
 > - Dùng **`Ctrl+.`** để auto-fix lỗi và thêm `using` statements
 > - Dùng **`F12`** để Go To Definition
-> - Dùng **Swagger UI** (tại `/swagger`) để test API nhanh thay vì Postman
-> - **Package Manager Console** nhanh hơn UI khi cài nhiều packages
+> - Dùng **Tag Helpers** (`asp-for`, `asp-action`, `asp-controller`) thay vì viết HTML thủ công
+> - Dùng **Partial Views** cho các component dùng lại nhiều lần
 
 > [!WARNING]
 > - Không commit file `appsettings.json` chứa password lên GitHub
@@ -632,12 +649,13 @@ export default api;
 
 ## 12. Tài liệu Tham khảo
 
-- 📖 [ASP.NET Core Web API — Docs](https://learn.microsoft.com/en-us/aspnet/core/web-api/) — Tài liệu chính thức
+- 📖 [ASP.NET Core MVC — Docs](https://learn.microsoft.com/en-us/aspnet/core/mvc/overview) — Tài liệu chính thức
 - 📖 [.NET 8 Download](https://dotnet.microsoft.com/download/dotnet/8.0) — Cài .NET SDK
 - 📖 [Dapper](https://github.com/DapperLib/Dapper) — Micro ORM gọi Stored Procedures từ C#
-- 📖 [Swagger / Swashbuckle](https://learn.microsoft.com/en-us/aspnet/core/tutorials/web-api-help-pages-using-swagger) — Tích hợp Swagger vào ASP.NET Core
 - 📖 [Visual Studio 2022 Download](https://visualstudio.microsoft.com/vs/) — IDE chính
-- 📖 [SQL Server Documentation](https://learn.microsoft.com/en-us/sql/sql-server/)
-- 📖 [React + Vite](https://vitejs.dev/guide/) — Khởi tạo project React
-- 📖 [Ant Design](https://ant.design/) — Bộ UI component quản lý
-- 📖 [Recharts](https://recharts.org/) — Biểu đồ React
+- 📖 [SQL Server Express Download](https://www.microsoft.com/en-us/sql-server/sql-server-downloads)
+- 📖 [SSMS Download](https://aka.ms/ssmsfullsetup)
+- 📖 [Bootstrap 5](https://getbootstrap.com/) — UI Framework
+- 📖 [Bootstrap Icons](https://icons.getbootstrap.com/) — Bộ icon
+- 📖 [Chart.js](https://www.chartjs.org/) — Biểu đồ JavaScript
+- 📖 [Razor Views Syntax](https://learn.microsoft.com/en-us/aspnet/core/mvc/views/razor) — Cú pháp Razor
