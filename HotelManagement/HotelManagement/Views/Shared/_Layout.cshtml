@@ -1,0 +1,80 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Quản Lý Khách Sạn</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+</head>
+<body>
+    <header>
+        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-dark bg-dark border-bottom box-shadow mb-3">
+            <div class="container-fluid">
+                <a class="navbar-brand fw-bold text-warning" asp-area="" asp-controller="Home" asp-action="Index">🏨 HOTEL MANGER</a>
+                
+                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
+                    <ul class="navbar-nav flex-grow-1">
+                        <!-- Kiểm tra xem có thẻ từ (đã đăng nhập) chưa -->
+                        @if (User.Identity != null && User.Identity.IsAuthenticated)
+                        {
+                            // Lấy quyền và cắt bỏ khoảng trắng thừa
+                            var role = User.Claims.FirstOrDefault(c => c.Type == System.Security.Claims.ClaimTypes.Role)?.Value?.Trim();
+                            
+                            <li class="nav-item">
+                                <a class="nav-link text-light" asp-controller="Room" asp-action="RoomList">🛏️ Danh Sách Phòng</a>
+                            </li>
+                            
+                            @if (role == "ADMIN")
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link text-light" asp-controller="Admin" asp-action="Employeelist">👥 Quản Lý Nhân Viên</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link text-light" href="#">📈 Báo Cáo Doanh Thu</a>
+                                </li>
+                            }
+                        }
+                    </ul>
+                    
+                    <ul class="navbar-nav">
+                        @if (User.Identity != null && User.Identity.IsAuthenticated)
+                        {
+                            var username = User.Identity.Name?.Trim();
+                            var role = User.Claims.FirstOrDefault(c => c.Type == System.Security.Claims.ClaimTypes.Role)?.Value?.Trim();
+
+                            <li class="nav-item">
+                                <span class="nav-link text-warning fw-bold">Xin chào, @username (@role)</span>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-danger fw-bold" asp-controller="Account" asp-action="Logout">Đăng xuất</a>
+                            </li>
+                        }
+                        else
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-light" asp-controller="Account" asp-action="Login">Đăng nhập</a>
+                            </li>
+                        }
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </header>
+    
+    <div class="container">
+        <main role="main" class="pb-3">
+            @RenderBody()
+        </main>
+    </div>
+
+    <footer class="border-top footer text-muted mt-5">
+        <div class="container text-center">
+            &copy; 2026 - Hệ thống Quản Lý Khách Sạn
+        </div>
+    </footer>
+    <script src="~/lib/jquery/dist/jquery.min.css"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

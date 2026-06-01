@@ -1,0 +1,38 @@
+﻿@{
+    Layout = null; // Trang đăng nhập thì không cần xài Layout chung
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Đăng nhập - Quản Lý Khách Sạn</title>
+    <!-- Mượn tạm thư viện Bootstrap mặc định của ASP.NET -->
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+</head>
+<body class="bg-light d-flex align-items-center justify-content-center" style="height: 100vh;">
+
+    <div class="card shadow-sm p-4" style="width: 400px; border-radius: 15px;">
+        <h2 class="text-center text-primary mb-4">HỆ THỐNG QUẢN LÝ</h2>
+        
+        @if (ViewBag.ErrorMessage != null)
+        {
+            <div class="alert alert-danger">@ViewBag.ErrorMessage</div>
+        }
+
+        <form asp-controller="Account" asp-action="Login" method="post">
+            <div class="mb-3">
+                <label class="form-label fw-bold">Tên đăng nhập (Username)</label>
+                <input type="text" name="username" class="form-control" required placeholder="Nhập tên tài khoản..." />
+            </div>
+            <div class="mb-3">
+                <label class="form-label fw-bold">Mật khẩu (Password)</label>
+                <input type="password" name="password" class="form-control" required placeholder="********" />
+            </div>
+            <button type="submit" class="btn btn-primary w-100 fw-bold fs-5">ĐĂNG NHẬP</button>
+        </form>
+    </div>
+
+</body>
+</html>

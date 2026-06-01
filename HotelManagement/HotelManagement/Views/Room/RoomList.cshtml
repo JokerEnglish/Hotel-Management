@@ -1,0 +1,61 @@
+﻿@model HotelManagement.ViewModels.PaginatedList<HotelManagement.Models.Phong>
+@{
+    ViewData["Title"] = "Danh sách Phòng";
+}
+
+<div class="container mt-4">
+    <h2 class="text-primary fw-bold mb-4">QUẢN LÝ DANH SÁCH PHÒNG</h2>
+
+    <table class="table table-bordered table-hover shadow-sm bg-white">
+        <thead class="table-dark text-center">
+            <tr>
+                <th>Mã Phòng</th>
+                <th>Tên Phòng</th>
+                <th>Loại Phòng</th>
+                <th>Tình Trạng</th>
+                <th>Sức Chứa (Người)</th>
+                <th>Ghi Chú</th>
+            </tr>
+        </thead>
+        <tbody class="text-center align-middle">
+            @foreach (var item in Model.Items)
+            {
+                <tr>
+                    <td class="fw-bold">@item.Map</td>
+                    <td class="text-primary fw-bold">@item.Tenphong</td>
+                    <!-- Lấy tên loại phòng từ bảng kế bên -->
+                    <td>@(item.MaloaiphongNavigation != null ? item.MaloaiphongNavigation.Tenloai : "N/A")</td>
+                    <td>
+                        @if (item.Tinhtrang == 1)
+                        {
+                            <span class="badge bg-success px-3 py-2">Trống</span>
+                        }
+                        else if (item.Tinhtrang == 2)
+                        {
+
+                            <span class="badge bg-danger px-3 py-2">Đang thuê</span>
+                        }
+                        else
+                        {
+
+                            <span class="badge bg-warning text-dark px-3 py-2">Đang dọn</span>
+                        }
+                    </td>
+                    <td>@item.Soluongkhachtoida</td>
+                    <td>@item.Ghichu</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <!-- Nút Phân trang -->
+    <div class="d-flex justify-content-center mt-4">
+        <a asp-action="RoomList" asp-route-pageNumber="@(Model.PageIndex - 1)"
+           class="btn btn-outline-primary mx-1 @(!Model.HasPreviousPage ? "disabled" : "")">⬅️ Trang Trước</a>
+        
+        <span class="btn btn-primary mx-1 fw-bold">Trang @Model.PageIndex / @Model.TotalPages</span>
+
+        <a asp-action="RoomList" asp-route-pageNumber="@(Model.PageIndex + 1)"
+           class="btn btn-outline-primary mx-1 @(!Model.HasNextPage ? "disabled" : "")">Trang Sau ➡️</a>
+    </div>
+</div>
