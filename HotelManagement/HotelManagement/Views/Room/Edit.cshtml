@@ -1,0 +1,61 @@
+@model HotelManagement.Models.Phong
+@{
+    ViewData["Title"] = "Sửa Thông Tin Phòng";
+}
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow border-0">
+                <div class="card-header bg-primary text-white text-center py-3">
+                    <h3 class="mb-0 fw-bold">✏️ SỬA THÔNG TIN PHÒNG</h3>
+                </div>
+                <div class="card-body p-4">
+                    <form asp-action="Edit" asp-route-id="@Model.Map" method="post">
+                        <!-- Bắt buộc phải có hidden input Map để biết đang sửa phòng nào -->
+                        <input type="hidden" asp-for="Map" />
+
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Tên Phòng</label>
+                            <input asp-for="Tenphong" class="form-control" required />
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Loại Phòng</label>
+                            <select asp-for="Maloaiphong" class="form-select" required>
+                                @foreach (var loai in ViewBag.LoaiPhongList)
+                                {
+                                    <option value="@loai.Maloaiphong">@loai.Tenloai</option>
+                                }
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Tình Trạng</label>
+                            <select asp-for="Tinhtrang" class="form-select" required>
+                                <option value="1">Trống</option>
+                                <option value="2">Đang Thuê</option>
+                                <option value="3">Đang Dọn</option>
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Sức Chứa</label>
+                            <input asp-for="Soluongkhachtoida" type="number" class="form-control" min="1" required />
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="form-label fw-bold">Ghi Chú</label>
+                            <textarea asp-for="Ghichu" class="form-control" rows="3"></textarea>
+                        </div>
+
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary fw-bold py-2">💾 Cập Nhật Phòng</button>
+                            <a asp-action="RoomList" class="btn btn-outline-secondary fw-bold">⬅️ Hủy bỏ</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

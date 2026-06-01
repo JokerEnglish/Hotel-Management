@@ -6,6 +6,12 @@
 <div class="container mt-4">
     <h2 class="text-primary fw-bold mb-4">QUẢN LÝ DANH SÁCH PHÒNG</h2>
 
+    <!-- Chỉ Admin mới thấy nút Thêm Phòng -->
+    @if (User.IsInRole("ADMIN"))
+    {
+        <a asp-action="Create" class="btn btn-success fw-bold mb-3 shadow-sm">+ Thêm Phòng Mới</a>
+    }
+
     <table class="table table-bordered table-hover shadow-sm bg-white">
         <thead class="table-dark text-center">
             <tr>
@@ -15,6 +21,12 @@
                 <th>Tình Trạng</th>
                 <th>Sức Chứa (Người)</th>
                 <th>Ghi Chú</th>
+                
+                <!-- Chỉ Admin mới thấy cột Hành Động -->
+                @if (User.IsInRole("ADMIN"))
+                {
+                    <th>Hành Động</th>
+                }
             </tr>
         </thead>
         <tbody class="text-center align-middle">
@@ -23,7 +35,6 @@
                 <tr>
                     <td class="fw-bold">@item.Map</td>
                     <td class="text-primary fw-bold">@item.Tenphong</td>
-                    <!-- Lấy tên loại phòng từ bảng kế bên -->
                     <td>@(item.MaloaiphongNavigation != null ? item.MaloaiphongNavigation.Tenloai : "N/A")</td>
                     <td>
                         @if (item.Tinhtrang == 1)
@@ -43,6 +54,14 @@
                     </td>
                     <td>@item.Soluongkhachtoida</td>
                     <td>@item.Ghichu</td>
+               
+                    @if (User.IsInRole("ADMIN"))
+                    {
+                        <td>
+                            <a asp-action="Edit" asp-route-id="@item.Map" class="btn btn-sm btn-outline-primary fw-bold mx-1">Sửa</a>
+                            <a asp-action="Delete" asp-route-id="@item.Map" class="btn btn-sm btn-outline-danger fw-bold mx-1" onclick="return confirm('Bạn có chắc chắn muốn xóa phòng này?');">Xóa</a>
+                        </td>
+                    }
                 </tr>
             }
         </tbody>
