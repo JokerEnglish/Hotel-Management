@@ -1,4 +1,4 @@
-﻿@model HotelManagement.ViewModels.PaginatedList<HotelManagement.Models.Phong>
+@model HotelManagement.ViewModels.PaginatedList<HotelManagement.Models.Phong>
 @{
     ViewData["Title"] = "Danh sách Phòng";
 }
@@ -22,11 +22,8 @@
                 <th>Sức Chứa (Người)</th>
                 <th>Ghi Chú</th>
                 
-                <!-- Chỉ Admin mới thấy cột Hành Động -->
-                @if (User.IsInRole("ADMIN"))
-                {
                     <th>Hành Động</th>
-                }
+  
             </tr>
         </thead>
         <tbody class="text-center align-middle">
@@ -55,13 +52,14 @@
                     <td>@item.Soluongkhachtoida</td>
                     <td>@item.Ghichu</td>
                
-                    @if (User.IsInRole("ADMIN"))
-                    {
-                        <td>
+                    <td>
+                        <a asp-action="Details" asp-route-id="@item.Map" class="btn btn-sm btn-outline-info fw-bold mx-1">Chi tiết</a>
+                        @if (User.IsInRole("ADMIN"))
+                        {
                             <a asp-action="Edit" asp-route-id="@item.Map" class="btn btn-sm btn-outline-primary fw-bold mx-1">Sửa</a>
                             <a asp-action="Delete" asp-route-id="@item.Map" class="btn btn-sm btn-outline-danger fw-bold mx-1" onclick="return confirm('Bạn có chắc chắn muốn xóa phòng này?');">Xóa</a>
-                        </td>
-                    }
+                        }
+                    </td>
                 </tr>
             }
         </tbody>

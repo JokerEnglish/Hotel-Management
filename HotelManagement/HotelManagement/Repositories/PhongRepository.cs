@@ -26,7 +26,7 @@ namespace HotelManagement.Repositories
         }
         public async Task<Phong> GetByIdAsync(int id)
         {
-            return await _dbContext.Phongs.FindAsync(id);
+         return await _dbContext.Phongs.Include(p => p.MaloaiphongNavigation) .FirstOrDefaultAsync(p => p.Map == id);
         }
         public async Task AddAsync(Phong phong)
         {

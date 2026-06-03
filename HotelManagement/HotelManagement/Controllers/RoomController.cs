@@ -83,5 +83,16 @@ namespace HotelManagement.Controllers
             await _phongRepo.DeleteAsync(id);
             return RedirectToAction("RoomList");
         }
+
+        [HttpGet]
+        public async Task<IActionResult> Details(int id)
+        {
+            var phong = await _phongRepo.GetByIdAsync(id);
+            if (phong == null)
+            {
+                return NotFound();
+            }
+            return View(phong);
+        }
     }
 }

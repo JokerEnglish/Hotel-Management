@@ -24,5 +24,12 @@ namespace HotelManagement.Repositories
         {
             return await _dbContext.Taikhoans.FindAsync(id);
         }
+
+        public async Task AddAsync(Taikhoan taikhoan)
+        {
+            await _dbContext.Taikhoans.AddAsync(taikhoan);
+            await _dbContext.SaveChangesAsync();
+        }
+
     }
 }

@@ -1,4 +1,4 @@
-﻿@model IEnumerable<HotelManagement.Models.Nhanvien>
+@model IEnumerable<HotelManagement.Models.Nhanvien>
 @{
     ViewData["Title"] = "Quản Lý Nhân Viên";
 }
@@ -6,8 +6,24 @@
 <div class="container mt-4">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h2 class="text-primary fw-bold">👥 QUẢN LÝ NHÂN VIÊN</h2>
-        <a href="#" class="btn btn-success fw-bold shadow-sm">+ Thêm Nhân Viên Mới</a>
+        <a asp-action="Create" asp-controller="Admin" class="btn btn-success fw-bold shadow-sm">+ Thêm Nhân Viên Mới</a>
     </div>
+
+    <!-- Thanh tìm kiếm nhân viên -->
+    <form method="get" asp-action="EmployeeList" class="row g-3 mb-4">
+        <div class="col-md-6 col-lg-4">
+            <div class="input-group shadow-sm">
+                <input type="text" name="searchString" value="@ViewData["CurrentFilter"]" class="form-control border-0" placeholder="Tìm kiếm nhân viên..." />
+                <button type="submit" class="btn btn-primary fw-bold px-4">Tìm Kiếm</button>
+            </div>
+        </div>
+        @if (!string.IsNullOrEmpty(ViewData["CurrentFilter"] as string))
+        {
+            <div class="col-md-2">
+                <a asp-action="EmployeeList" class="btn btn-outline-secondary fw-bold w-100 shadow-sm">Xóa Lọc</a>
+            </div>
+        }
+    </form>
 
     <div class="card shadow-sm border-0">
         <div class="card-body p-0">
@@ -20,6 +36,7 @@
                         <th>Ngày Sinh</th>
                         <th>Số Điện Thoại</th>
                         <th>Email</th>
+                        <th>Chức Vụ</th>
                         <th>Hành Động</th>
                     </tr>
                 </thead>
@@ -47,8 +64,28 @@
                             <td>@item.Sdt</td>
                             <td>@item.Email</td>
                             <td>
-                                <button class="btn btn-sm btn-outline-primary fw-bold mx-1">Sửa</button>
-                                <button class="btn btn-sm btn-outline-danger fw-bold mx-1">Xóa</button>
+                                @{
+                                    var vaiTro = item.Taikhoans.FirstOrDefault()?.Vaitro?.Trim();
+                                    if (vaiTro == "ADMIN")
+                                    {
+                                        <span class="badge bg-warning text-dark px-3 py-2">Quản Trị Viên</span>
+                                    }
+                                    else if (vaiTro == "NHANVIEN")
+                                    {
+                                        <span class="badge bg-success text-white px-3 py-2">Nhân Viên</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-light text-muted border px-3 py-2">Chưa Cấp TK</span>
+                                    }
+                                }
+                            </td>
+                            <td>
+                                <a asp-action="Edit" asp-route-id="@item.Manv" class="btn btn-sm btn-outline-primary fw-bold mx-1">Sửa</a>
+                                <form asp-action="Delete" asp-route-id="@item.Manv" method="post" onsubmit="return confirm('Bạn có chắc chắn muốn xóa nhân viên này?');" style="display:inline;">
+                                    @Html.AntiForgeryToken()
+                                    <button type="submit" class="btn btn-sm btn-outline-danger fw-bold mx-1">Xóa</button>
+                                </form>
                             </td>
                         </tr>
                     }
@@ -57,3 +94,4 @@
         </div>
     </div>
 </div>
+

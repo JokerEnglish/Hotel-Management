@@ -5,5 +5,7 @@ namespace HotelManagement.InterfacesRepositories
     {
         Task<Taikhoan> GetByUsernameAndPasswordAsync(string username, string password);
         Task<Taikhoan> GetByIdAsync(int id);
+
+        Task AddAsync(Taikhoan taikhoan);
     }
 }

@@ -1,0 +1,71 @@
+@model HotelManagement.Models.Nhanvien
+@{
+    ViewData["Title"] = "Thêm Nhân Viên Mới";
+}
+
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+            <div class="card shadow-lg border-0 rounded-4">
+                <div class="card-header bg-primary bg-gradient text-white text-center py-3 rounded-top-4">
+                    <h3 class="fw-bold mb-0">👤 THÊM NHÂN VIÊN MỚI</h3>
+                </div>
+                <div class="card-body p-4">
+                    <form asp-action="Create" method="post">
+                        @Html.AntiForgeryToken()
+
+                        <div class="mb-3">
+                            <label asp-for="Hoten" class="form-label fw-bold text-secondary">Họ và Tên</label>
+                            <input asp-for="Hoten" class="form-control rounded-3" placeholder="Nhập họ và tên..." required />
+                            <span asp-validation-for="Hoten" class="text-danger small"></span>
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label asp-for="Phai" class="form-label fw-bold text-secondary">Giới Tính</label>
+                                <select asp-for="Phai" class="form-select rounded-3" required>
+                                    <option value="">Chọn giới tính</option>
+                                    <option value="Nam">Nam</option>
+                                    <option value="Nữ">Nữ</option>
+                                </select>
+                                <span asp-validation-for="Phai" class="text-danger small"></span>
+                            </div>
+                            <div class="col-md-6">
+                                <label asp-for="Ngaysinh" class="form-label fw-bold text-secondary">Ngày Sinh</label>
+                                <input asp-for="Ngaysinh" type="date" class="form-control rounded-3" />
+                                <span asp-validation-for="Ngaysinh" class="text-danger small"></span>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Sdt" class="form-label fw-bold text-secondary">Số Điện Thoại</label>
+                            <input asp-for="Sdt" class="form-control rounded-3" placeholder="Nhập số điện thoại..." required />
+                            <span asp-validation-for="Sdt" class="text-danger small"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Email" class="form-label fw-bold text-secondary">Email</label>
+                            <input asp-for="Email" type="email" class="form-control rounded-3" placeholder="example@gmail.com" required />
+                            <span asp-validation-for="Email" class="text-danger small"></span>
+                        </div>
+
+                        <div class="mb-4">
+                            <label asp-for="Diachi" class="form-label fw-bold text-secondary">Địa Chỉ</label>
+                            <textarea asp-for="Diachi" rows="2" class="form-control rounded-3" placeholder="Nhập địa chỉ tạm trú..."></textarea>
+                            <span asp-validation-for="Diachi" class="text-danger small"></span>
+                        </div>
+
+                        <div class="d-flex justify-content-between">
+                            <a asp-action="EmployeeList" class="btn btn-outline-secondary px-4 fw-bold rounded-3">
+                                ⬅ Quay Lại
+                            </a>
+                            <button type="submit" class="btn btn-success px-4 fw-bold rounded-3 shadow">
+                                ✔ Tạo Nhân Viên
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

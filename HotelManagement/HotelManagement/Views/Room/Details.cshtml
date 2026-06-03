@@ -1,0 +1,81 @@
+﻿@model HotelManagement.Models.Phong
+@{
+    ViewData["Title"] = "Chi Tiết Phòng";
+}
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow-lg border-0 rounded-3">
+                <div class="card-header bg-dark text-white text-center py-3">
+                    <h3 class="mb-0 fw-bold">🏨 CHI TIẾT PHÒNG - @Model.Tenphong</h3>
+                </div>
+                <div class="card-body p-5">
+                    <div class="row mb-4">
+                        <div class="col-sm-4 fw-bold text-muted text-uppercase fs-6">Mã Phòng</div>
+                        <div class="col-sm-8 fs-5 fw-bold text-dark">@Model.Map</div>
+                    </div>
+                    <hr />
+
+                    <div class="row mb-4">
+                        <div class="col-sm-4 fw-bold text-muted text-uppercase fs-6">Tên Phòng</div>
+                        <div class="col-sm-8 fs-5 fw-bold text-primary">@Model.Tenphong</div>
+                    </div>
+                    <hr />
+
+                    <div class="row mb-4">
+                        <div class="col-sm-4 fw-bold text-muted text-uppercase fs-6">Loại Phòng</div>
+                        <div class="col-sm-8 fs-5 fw-bold text-info">
+                            @(Model.MaloaiphongNavigation != null ? Model.MaloaiphongNavigation.Tenloai : "N/A")
+                        </div>
+                    </div>
+                    <hr />
+
+                    <div class="row mb-4">
+                        <div class="col-sm-4 fw-bold text-muted text-uppercase fs-6">Đơn Giá / Ngày</div>
+                        <div class="col-sm-8 fs-5 fw-bold text-danger">
+                            @(Model.MaloaiphongNavigation != null ? Model.MaloaiphongNavigation.Dongia.ToString("N0") + " VNĐ" : "N/A")
+                        </div>
+                    </div>
+                    <hr />
+
+                    <div class="row mb-4">
+                        <div class="col-sm-4 fw-bold text-muted text-uppercase fs-6">Tình Trạng</div>
+                        <div class="col-sm-8">
+                            @if (Model.Tinhtrang == 1)
+                            {
+                                <span class="badge bg-success px-3 py-2 fs-6">Trống</span>
+                            }
+                            else if (Model.Tinhtrang == 2)
+                            {
+                                <span class="badge bg-danger px-3 py-2 fs-6">Đang thuê</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-warning text-dark px-3 py-2 fs-6">Đang dọn</span>
+                            }
+                        </div>
+                    </div>
+                    <hr />
+
+                    <div class="row mb-4">
+                        <div class="col-sm-4 fw-bold text-muted text-uppercase fs-6">Sức Chứa Tối Đa</div>
+                        <div class="col-sm-8 fs-5 text-dark">@Model.Soluongkhachtoida người</div>
+                    </div>
+                    <hr />
+
+                    <div class="row mb-4">
+                        <div class="col-sm-4 fw-bold text-muted text-uppercase fs-6">Ghi Chú</div>
+                        <div class="col-sm-8 fs-5 text-dark">
+                            @(string.IsNullOrEmpty(Model.Ghichu) ? "(Không có ghi chú)" : Model.Ghichu)
+                        </div>
+                    </div>
+
+                    <div class="d-grid gap-2 mt-5">
+                        <a asp-action="RoomList" class="btn btn-outline-secondary fw-bold py-2">⬅️ Quay lại danh sách</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
