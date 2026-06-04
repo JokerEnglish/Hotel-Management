@@ -2,6 +2,7 @@
 using HotelManagement.Models;
 using Microsoft.EntityFrameworkCore;
 
+
 namespace HotelManagement.Repositories
 {
     public class NhanvienRepository : INhanvienRepository
@@ -51,6 +52,12 @@ namespace HotelManagement.Repositories
 
                 await _context.SaveChangesAsync();
             }
+        }
+
+        public async Task<Nhanvien> GetEmployeeByIdAsync(int id)
+        {
+            return await _context.Nhanviens
+                .FirstOrDefaultAsync(nhanvien => nhanvien.Manv == id);
         }
     }
 }

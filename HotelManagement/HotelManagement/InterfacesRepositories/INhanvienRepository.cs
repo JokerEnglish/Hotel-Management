@@ -10,5 +10,7 @@ namespace HotelManagement.InterfacesRepositories
         Task<Nhanvien?> GetByIdAsync(int id);
         Task UpdateAsync(Nhanvien nhanvien);
         Task DeleteAsync(int id);
+        Task<Nhanvien> GetEmployeeByIdAsync(int id);
+        
     }
 }
