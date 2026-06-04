@@ -1,0 +1,79 @@
+@model HotelManagement.ViewModels.Bill
+@{
+    ViewData["Title"] = "Chọn Phiếu Thuê Thanh Toán";
+    Layout = "_Layout";
+}
+
+<div class="container mt-4">
+    <h2 class="text-primary fw-bold mb-4">💳 CHỌN PHIẾU THUÊ THANH TOÁN</h2>
+
+    <div class="card shadow-sm mb-4 border-0">
+        <div class="card-header bg-dark text-white fw-bold">
+            👤 THÔNG TIN KHÁCH HÀNG
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-4">
+                    <strong>Họ và tên:</strong> @Model.khachhang.Tenkh
+                </div>
+                <div class="col-md-4">
+                    <strong>Số CCCD:</strong> @Model.khachhang.Cmndkh
+                </div>
+                <div class="col-md-4">
+                    <strong>Số Điện Thoại:</strong> @Model.khachhang.Tel
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card shadow-sm border-0">
+        <div class="card-header bg-primary text-white fw-bold">
+            📋 DANH SÁCH PHÒNG ĐANG THUÊ
+        </div>
+        <div class="card-body">
+            @if (Model.phieuthues != null && Model.phieuthues.Count > 0)
+            {
+                <table class="table table-bordered table-hover text-center align-middle">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Mã Phiếu</th>
+                            <th>Tên Phòng</th>
+                            <th>Loại Phòng</th>
+                            <th>Đơn Giá / Ngày</th>
+                            <th>Ngày Thuê</th>
+                            <th>Thao Tác</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var rent in Model.phieuthues)
+                        {
+                            <tr>
+                                <td class="fw-bold">@rent.Mapt</td>
+                                <td class="text-primary fw-bold">@rent.MapNavigation.Tenphong</td>
+                                <td>@rent.MapNavigation.MaloaiphongNavigation.Tenloai</td>
+                                <td class="text-danger fw-bold">@rent.MapNavigation.MaloaiphongNavigation.Dongia.ToString("N0") VNĐ</td>
+                                <td>@rent.Ngaylappt.ToString("dd/MM/yyyy HH:mm")</td>
+                                <td>
+                                    <a asp-action="Create" 
+                                       asp-route-khanghangID="@Model.khachhang.Makh" 
+                                       asp-route-rentID="@rent.Mapt" 
+                                       class="btn btn-success fw-bold">
+                                        🧾 Lập Hóa Đơn
+                                    </a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            }
+            else
+            {
+                <p class="text-muted text-center mb-0">Khách hàng này hiện không có phòng nào đang thuê cần thanh toán.</p>
+            }
+        </div>
+    </div>
+
+    <div class="mt-4">
+        <a asp-action="Index" class="btn btn-outline-secondary fw-bold">⬅️ Quay lại danh sách hóa đơn</a>
+    </div>
+</div>

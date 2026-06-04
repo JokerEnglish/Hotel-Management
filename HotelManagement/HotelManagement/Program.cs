@@ -37,10 +37,12 @@ builder.Services.AddHttpContextAccessor();
 
 // Dang ky depency injection cho repository
 builder.Services.AddScoped<IPhongRepository, PhongRepository>();
-
 builder.Services.AddScoped<ITaikhoanRepository, TaikhoanRepository>();
-
 builder.Services.AddScoped<INhanvienRepository, NhanvienRepository>();
+builder.Services.AddScoped<IBillRepository, BillRepository>();
+builder.Services.AddScoped<IKhachhangRepository, KhachhangRepository>();
+builder.Services.AddScoped<IRentRepository, RentRepository>();
+builder.Services.AddScoped<IPhuthuRepository, PhuthuRepository>();
 
 var app = builder.Build();
 

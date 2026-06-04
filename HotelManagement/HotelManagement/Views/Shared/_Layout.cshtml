@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
@@ -23,6 +23,9 @@
                             
                             <li class="nav-item">
                                 <a class="nav-link text-light" asp-controller="Room" asp-action="RoomList">🛏️ Danh Sách Phòng</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-light" asp-controller="Bill" asp-action="Index">🧾 Hóa Đơn</a>
                             </li>
                             
                             @if (role == "ADMIN")

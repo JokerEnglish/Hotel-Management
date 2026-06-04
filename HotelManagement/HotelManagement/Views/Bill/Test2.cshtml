@@ -1,0 +1,31 @@
+@model HotelManagement.ViewModels.test1
+@{
+    ViewData["Title"] = "Tìm kiếm Khách hàng lập Hóa đơn";
+    Layout = "_Layout";
+}
+
+<div class="container mt-5">
+    <h1 class="text-center fw-bold mb-4">LẬP HÓA ĐƠN</h1>
+    <div class="row justify-content-center">
+        <div class="col-md-5">
+            <form asp-action="Test2" method="post">
+                @Html.AntiForgeryToken()
+
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Ngày Lập Hóa Đơn</label>
+                    <input asp-for="Ngaylaphd" class="form-control text-center" readonly value="@DateTime.Now.ToString("MM/dd/yyyy")" style="background-color: #e9ecef;" />
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Nhập CCCD Khách Hàng</label>
+                    <input asp-for="CCCD" class="form-control" required />
+                    <span asp-validation-for="CCCD" class="text-danger mt-1 d-block"></span>
+                </div>
+
+                <div class="text-start mt-3">
+                    <button type="submit" class="btn btn-primary fw-bold px-4 py-2">Tạo</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
