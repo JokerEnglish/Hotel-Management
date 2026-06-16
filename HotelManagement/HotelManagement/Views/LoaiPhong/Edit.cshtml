@@ -1,0 +1,36 @@
+﻿@model HotelManagement.Models.Loaiphong
+@{
+    ViewData["Title"] = "Cập Nhật Loại Phòng";
+}
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow-lg border-0 rounded-3">
+                <div class="card-header bg-primary text-white text-center py-3">
+                    <h3 class="mb-0 fw-bold">📝 CẬP NHẬT LOẠI PHÒNG</h3>
+                </div>
+                <div class="card-body p-4">
+                    <form asp-action="Edit" asp-route-id="@Model.Maloaiphong" method="post">
+                        <input type="hidden" asp-for="Maloaiphong" />
+                        
+                        <div class="mb-3">
+                            <label asp-for="Tenloai" class="form-label fw-bold">Tên Loại Phòng</label>
+                            <input asp-for="Tenloai" class="form-control" required />
+                            <span asp-validation-for="Tenloai" class="text-danger"></span>
+                        </div>
+                        <div class="mb-4">
+                            <label asp-for="Dongia" class="form-label fw-bold">Đơn Giá (VNĐ)</label>
+                            <input asp-for="Dongia" type="number" class="form-control" required />
+                            <span asp-validation-for="Dongia" class="text-danger"></span>
+                        </div>
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary fw-bold py-2">💾 Cập Nhật</button>
+                            <a asp-action="Index" class="btn btn-outline-secondary fw-bold py-2">⬅️ Hủy / Quay lại</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

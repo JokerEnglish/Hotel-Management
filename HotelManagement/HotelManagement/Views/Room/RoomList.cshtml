@@ -5,12 +5,26 @@
 
 <div class="container mt-4">
     <h2 class="text-primary fw-bold mb-4">QUẢN LÝ DANH SÁCH PHÒNG</h2>
+    
+    <!-- Khu vực Thanh Tìm Kiếm và Nút Thêm -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        
+        <!-- Thanh Tìm Kiếm (Bên trái) -->
+        <form asp-action="RoomList" method="get" class="w-50 m-0">
+            <div class="input-group">
+                <input type="text" name="searchString" value="@ViewData["CurrentFilter"]" class="form-control" placeholder="Nhập tên phòng cần tìm..." />
+                <button type="submit" class="btn btn-primary fw-bold">🔍 Tìm Kiếm</button>
+                <a asp-action="RoomList" class="btn btn-outline-secondary">Xóa</a>
+            </div>
+        </form>
 
-    <!-- Chỉ Admin mới thấy nút Thêm Phòng -->
-    @if (User.IsInRole("ADMIN"))
-    {
-        <a asp-action="Create" class="btn btn-success fw-bold mb-3 shadow-sm">+ Thêm Phòng Mới</a>
-    }
+        <!-- Chỉ Admin mới thấy nút Thêm Phòng (Bên phải) -->
+        @if (User.IsInRole("ADMIN"))
+        {
+            <a asp-action="Create" class="btn btn-success fw-bold shadow-sm">+ Thêm Phòng Mới</a>
+        }   
+    </div>
+
 
     <table class="table table-bordered table-hover shadow-sm bg-white">
         <thead class="table-dark text-center">

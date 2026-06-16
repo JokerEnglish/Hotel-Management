@@ -1,0 +1,64 @@
+﻿@model HotelManagement.Models.Khachhang
+
+@{
+    ViewData["Title"] = "Thêm Khách Hàng";
+}
+
+<div class="container mt-4" style="max-width: 700px;">
+    <div class="card shadow-sm border-0">
+        <div class="card-header bg-primary text-white">
+            <h4 class="mb-0 fw-bold">➕ Thêm Khách Hàng Mới</h4>
+        </div>
+        <div class="card-body p-4">
+            <form asp-action="Create" method="post">
+                @Html.AntiForgeryToken()
+                <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+                <div class="mb-3">
+                    <label asp-for="Tenkh" class="form-label fw-bold">Tên Khách Hàng <span class="text-danger">*</span></label>
+                    <input asp-for="Tenkh" class="form-control" placeholder="Nhập tên khách hàng..." />
+                    <span asp-validation-for="Tenkh" class="text-danger small"></span>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label asp-for="Cmndkh" class="form-label fw-bold">Số CMND/CCCD <span class="text-danger">*</span></label>
+                        <input asp-for="Cmndkh" class="form-control" placeholder="Nhập số CMND/CCCD..." />
+                        <span asp-validation-for="Cmndkh" class="text-danger small"></span>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label asp-for="Tuoi" class="form-label fw-bold">Tuổi</label>
+                        <input asp-for="Tuoi" type="number" class="form-control" placeholder="Nhập tuổi..." />
+                        <span asp-validation-for="Tuoi" class="text-danger small"></span>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label asp-for="Tel" class="form-label fw-bold">Số Điện Thoại</label>
+                        <input asp-for="Tel" class="form-control" placeholder="Nhập số điện thoại..." />
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label asp-for="Maloaikhach" class="form-label fw-bold">Loại Khách <span class="text-danger">*</span></label>
+                        <select asp-for="Maloaikhach" class="form-select" asp-items="ViewBag.LoaiKhachId">
+                            <option value="">-- Chọn Loại Khách --</option>
+                        </select>
+                        <span asp-validation-for="Maloaikhach" class="text-danger small"></span>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="Diachikh" class="form-label fw-bold">Địa Chỉ</label>
+                    <input asp-for="Diachikh" class="form-control" placeholder="Nhập địa chỉ..." />
+                </div>
+
+                <input type="hidden" asp-for="Map" value="1" />
+
+                <div class="d-flex gap-2 mt-4">
+                    <button type="submit" class="btn btn-primary fw-bold px-4">💾 Lưu</button>
+                    <a asp-action="Index" class="btn btn-outline-secondary px-4">Hủy</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

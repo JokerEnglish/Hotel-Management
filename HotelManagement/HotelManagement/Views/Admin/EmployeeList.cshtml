@@ -4,26 +4,28 @@
 }
 
 <div class="container mt-4">
+    <h2 class="text-primary fw-bold mb-4">👥 QUẢN LÝ NHÂN VIÊN</h2>
+    
+    <!-- Khu vực Thanh Tìm Kiếm và Nút Thêm -->
     <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2 class="text-primary fw-bold">👥 QUẢN LÝ NHÂN VIÊN</h2>
+        
+        <!-- Thanh tìm kiếm nhân viên (Bên trái) -->
+        <form method="get" asp-action="EmployeeList" class="w-50 m-0">
+            <div class="input-group shadow-sm">
+                <input type="text" name="searchString" value="@ViewData["CurrentFilter"]" class="form-control" placeholder="Tìm kiếm nhân viên..." />
+                <button type="submit" class="btn btn-primary fw-bold px-4">🔍 Tìm Kiếm</button>
+                @if (!string.IsNullOrEmpty(ViewData["CurrentFilter"] as string))
+                {
+                    <a asp-action="EmployeeList" class="btn btn-outline-secondary">Xóa</a>
+                }
+            </div>
+        </form>
+
+        <!-- Nút Thêm Nhân Viên (Bên phải) -->
         <a asp-action="Create" asp-controller="Admin" class="btn btn-success fw-bold shadow-sm">+ Thêm Nhân Viên Mới</a>
+        
     </div>
 
-    <!-- Thanh tìm kiếm nhân viên -->
-    <form method="get" asp-action="EmployeeList" class="row g-3 mb-4">
-        <div class="col-md-6 col-lg-4">
-            <div class="input-group shadow-sm">
-                <input type="text" name="searchString" value="@ViewData["CurrentFilter"]" class="form-control border-0" placeholder="Tìm kiếm nhân viên..." />
-                <button type="submit" class="btn btn-primary fw-bold px-4">Tìm Kiếm</button>
-            </div>
-        </div>
-        @if (!string.IsNullOrEmpty(ViewData["CurrentFilter"] as string))
-        {
-            <div class="col-md-2">
-                <a asp-action="EmployeeList" class="btn btn-outline-secondary fw-bold w-100 shadow-sm">Xóa Lọc</a>
-            </div>
-        }
-    </form>
 
     <div class="card shadow-sm border-0">
         <div class="card-body p-0">

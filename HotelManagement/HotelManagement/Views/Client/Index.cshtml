@@ -1,0 +1,114 @@
+﻿@model HotelManagement.ViewModels.PaginatedList<HotelManagement.Models.Khachhang>
+
+@{
+    ViewData["Title"] = "Quản Lý Thông Tin Khách Hàng";
+}
+
+<div class="container mt-4">
+    <!-- Tiêu đề -->
+    <h2 class="text-center fw-light mb-4" style="font-size: 2.5rem; letter-spacing: 2px;">QUẢN LÝ THÔNG TIN KHÁCH HÀNG</h2>
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <!-- Form Tìm kiếm và Lọc (Theo thiết kế của bạn) -->
+        <form asp-action="Index" method="get" class="d-flex w-75 m-0 gap-2">
+            
+            <!-- Ô tìm kiếm tên khách hàng -->
+            <div class="input-group" style="width: 300px;">
+                <input type="text" name="searchString" value="@ViewData["CurrentFilter"]" class="form-control" placeholder="Tìm tên khách hàng..." />
+                <button type="submit" class="btn btn-info text-white fw-bold"><i class="bi bi-search"></i></button>
+            </div>
+            
+            <!-- Dropdown chọn loại khách -->
+            <div class="input-group" style="width: 200px;">
+                <select name="loaiKhachId" class="form-select" asp-items="ViewBag.LoaiKhachId" onchange="this.form.submit();">
+                    <option value="">Loại Khách</option>
+                </select>
+            </div>
+            
+            <!-- Nút Xóa Lọc (Chỉ hiện khi đang tìm kiếm) -->
+            @if (!string.IsNullOrEmpty(ViewData["CurrentFilter"] as string) || Context.Request.Query["loaiKhachId"].ToString() != "")
+            {
+                <a asp-action="Index" class="btn btn-outline-secondary">Xóa</a>
+            }
+        </form>
+
+        <!-- Nút Thêm Mới -->
+        <a asp-action="Create" class="btn btn-primary fw-bold px-4">Thêm khách hàng mới</a>
+    </div>
+
+    <!-- Bảng Dữ Liệu -->
+    <div class="card shadow-sm border-0">
+        <div class="card-body p-0">
+            <table class="table table-hover table-bordered mb-0">
+                <thead class="table-light text-center align-middle">
+                    <tr>
+                        <th class="text-primary fs-6">STT</th>
+                        <th class="text-primary fs-6">Tên Khách Hàng</th>
+                        <th class="text-primary fs-6">CMND</th>
+                        <th class="text-primary fs-6">Tuổi</th>
+                        <th class="text-primary fs-6">Loại Khách</th>
+                        <th class="text-primary fs-6">SĐT</th>
+                        <th class="text-primary fs-6">Diachikh</th>
+                        <th class="text-primary fs-6">Tác vụ</th>
+                    </tr>
+                </thead>
+                <tbody class="text-center align-middle">
+                    @if (Model != null && Model.Items.Any())
+                    {
+                        int stt = 1;
+
+                        foreach (var item in Model.Items)
+                        {
+                            <tr>
+                                <td class="fw-bold">@stt</td>
+                                <td class="fw-bold text-primary text-start">@item.Tenkh</td>
+                                <td>@item.Cmndkh</td>
+                                <td>@item.Tuoi</td>
+                                <td><span class="badge border text-dark fw-normal px-3 py-2">@item.MaloaikhachNavigation?.Tenloaikhach</span></td>
+                                <td>@item.Tel</td>
+                                <td>@item.Diachikh</td>
+                                <td>
+                                    <a asp-action="Edit" asp-route-id="@item.Makh" class="btn btn-sm btn-outline-primary fw-bold mx-1">Sửa</a>
+                                    <form asp-action="Delete" asp-route-id="@item.Makh" method="post" onsubmit="return confirm('Bạn có chắc chắn muốn xóa khách hàng này?');" style="display:inline;">
+                                        @Html.AntiForgeryToken()
+                                        <button type="submit" class="btn btn-sm btn-outline-danger fw-bold mx-1">Xóa</button>
+                                    </form>
+                                </td>
+                            </tr>
+                            stt++;
+                        }
+                    }
+                    else
+                    {
+                        <tr><td colspan="8" class="text-muted py-3">Không có dữ liệu khách hàng.</td></tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Thanh Phân Trang (Pagination: Đầu < > Cuối) -->
+    @if (Model != null && Model.TotalPages > 1)
+    {
+        <div class="d-flex justify-content-center mt-4 mb-5">
+            <div class="btn-group shadow-sm">
+                @{
+                    var prevDisabled = !Model.HasPreviousPage ? "disabled" : "";
+                    var nextDisabled = !Model.HasNextPage ? "disabled" : "";
+                    var queryLoaiKhach = Context.Request.Query["loaiKhachId"];
+                }
+                <!-- Nút Đầu -->
+                <a asp-action="Index" asp-route-pageNumber="1" asp-route-searchString="@ViewData["CurrentFilter"]" asp-route-loaiKhachId="@queryLoaiKhach" class="btn btn-outline-secondary @prevDisabled px-3">Đầu</a>
+                
+                <!-- Nút Lùi (<) -->
+                <a asp-action="Index" asp-route-pageNumber="@(Model.PageIndex - 1)" asp-route-searchString="@ViewData["CurrentFilter"]" asp-route-loaiKhachId="@queryLoaiKhach" class="btn btn-outline-secondary @prevDisabled px-3">&lt;</a>
+                
+                <!-- Nút Tới (>) -->
+                <a asp-action="Index" asp-route-pageNumber="@(Model.PageIndex + 1)" asp-route-searchString="@ViewData["CurrentFilter"]" asp-route-loaiKhachId="@queryLoaiKhach" class="btn btn-outline-secondary @nextDisabled px-3">&gt;</a>
+                
+                <!-- Nút Cuối -->
+                <a asp-action="Index" asp-route-pageNumber="@Model.TotalPages" asp-route-searchString="@ViewData["CurrentFilter"]" asp-route-loaiKhachId="@queryLoaiKhach" class="btn btn-outline-secondary @nextDisabled px-3">Cuối</a>
+            </div>
+        </div>
+    }
+</div>

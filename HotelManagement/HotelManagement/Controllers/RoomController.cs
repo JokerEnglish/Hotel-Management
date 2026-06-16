@@ -16,13 +16,25 @@ namespace HotelManagement.Controllers
         }
 
         // --- TẤT CẢ NHÂN VIÊN ĐỀU ĐƯỢC XEM ---
-        public async Task<IActionResult> RoomList(int pageNumber = 1)
+        public async Task<IActionResult> RoomList(string searchString, int pageNumber = 1)
         {
             int pageSize = 10;
             var phongs = _phongRepo.GetAllAsync();
+
+            // Nếu người dùng có nhập từ khóa tìm kiếm
+            if (!string.IsNullOrEmpty(searchString))
+            {
+                phongs = phongs.Where(p => p.Tenphong.Contains(searchString));
+            }
+
             var paginatedList = await PaginatedList<Models.Phong>.CreateAsync(phongs, pageNumber, pageSize);
+
+            // Lưu lại từ khóa tìm kiếm để hiển thị lại trên giao diện
+            ViewData["CurrentFilter"] = searchString;
+
             return View(paginatedList);
         }
+
 
         // --- CHỈ ADMIN MỚI ĐƯỢC THÊM PHÒNG ---
         [Authorize(Roles = "ADMIN")]

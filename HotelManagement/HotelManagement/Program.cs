@@ -43,6 +43,7 @@ builder.Services.AddScoped<IBillRepository, BillRepository>();
 builder.Services.AddScoped<IKhachhangRepository, KhachhangRepository>();
 builder.Services.AddScoped<IRentRepository, RentRepository>();
 builder.Services.AddScoped<IPhuthuRepository, PhuthuRepository>();
+builder.Services.AddScoped<ILoaiPhongRepository, LoaiPhongRepository>();
 
 var app = builder.Build();
 

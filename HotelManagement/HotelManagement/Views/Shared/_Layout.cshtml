@@ -6,80 +6,140 @@
     <title>@ViewData["Title"] - Quản Lý Khách Sạn</title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <!-- Thêm thư viện Bootstrap Icons cho các biểu tượng -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+    <style>
+            .nav-pills .nav-link:hover { background-color: rgba(255, 255, 255, 0.1); }
+    </style>
 </head>
 <body>
-    <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-dark bg-dark border-bottom box-shadow mb-3">
-            <div class="container-fluid">
-                <a class="navbar-brand fw-bold text-warning" asp-area="" asp-controller="Home" asp-action="Index">🏨 HOTEL MANGER</a>
-                
-                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    <ul class="navbar-nav flex-grow-1">
-                        <!-- Kiểm tra xem có thẻ từ (đã đăng nhập) chưa -->
+    <div class="container-fluid">
+        <div class="row flex-nowrap">
+            <!-- THANH SIDEBAR BÊN TRÁI -->
+            <div class="col-auto col-md-3 col-xl-2 px-sm-2 px-0 bg-dark">
+                <div class="d-flex flex-column align-items-center align-items-sm-start px-3 pt-4 text-white min-vh-100">
+                    <a asp-controller="Home" asp-action="Index" class="d-flex align-items-center pb-3 mb-md-0 me-md-auto text-white text-decoration-none">
+                        <span class="fs-4 fw-bold">🏨 Quản lý khách sạn</span>
+                    </a>
+                    <hr class="w-100 bg-secondary" />
+                    
+                    <ul class="nav nav-pills flex-column mb-sm-auto mb-0 w-100" id="menu">
+                        <li class="nav-item mb-2">
+                            <a asp-controller="Home" asp-action="Index" class="nav-link text-white">
+                                <i class="bi bi-house-door fs-5 me-2"></i><span class="ms-1 d-none d-sm-inline">Home</span>
+                            </a>
+                        </li>
+
                         @if (User.Identity != null && User.Identity.IsAuthenticated)
                         {
-                            // Lấy quyền và cắt bỏ khoảng trắng thừa
                             var role = User.Claims.FirstOrDefault(c => c.Type == System.Security.Claims.ClaimTypes.Role)?.Value?.Trim();
-                            
-                            <li class="nav-item">
-                                <a class="nav-link text-light" asp-controller="Room" asp-action="RoomList">🛏️ Danh Sách Phòng</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link text-light" asp-controller="Bill" asp-action="Index">🧾 Hóa Đơn</a>
-                            </li>
-                            
+
                             @if (role == "ADMIN")
                             {
-                                <li class="nav-item">
-                                    <a class="nav-link text-light" asp-controller="Admin" asp-action="Employeelist">👥 Quản Lý Nhân Viên</a>
+                                <li class="nav-item mb-2">
+                                    <a asp-controller="Admin" asp-action="Employeelist" class="nav-link text-white">
+                                        <i class="bi bi-people fs-5 me-2"></i><span class="ms-1 d-none d-sm-inline">Nhân viên</span>
+                                    </a>
                                 </li>
-                                <!-- Thêm menu Cấp tài khoản vào đây -->
-                                <li class="nav-item">
-                                    <a class="nav-link text-light" asp-controller="Admin" asp-action="GrantAccount">🔑 Cấp Tài Khoản</a>
+                            }
+
+                            <!-- Menu Khách -->
+                            <li class="nav-item mb-2">
+                                <a asp-controller="Client" asp-action="Index" class="nav-link text-white">
+                                    <i class="bi bi-person fs-5 me-2"></i><span class="ms-1 d-none d-sm-inline">Khách</span>
+                                </a>
+                            </li>
+
+
+                            <li class="nav-item mb-2">
+                                <a asp-controller="Room" asp-action="RoomList" class="nav-link text-white">
+                                    <i class="bi bi-building fs-5 me-2"></i><span class="ms-1 d-none d-sm-inline">Phòng</span>
+                                </a>
+                            </li>
+
+                            <!-- Menu Phiếu thuê -->
+                            <li class="nav-item mb-2">
+                                <a href="#" class="nav-link text-white">
+                                    <i class="bi bi-card-list fs-5 me-2"></i><span class="ms-1 d-none d-sm-inline">Phiếu thuê</span>
+                                </a>
+                            </li>
+
+                            <li class="nav-item mb-2">
+                                <a asp-controller="Bill" asp-action="Index" class="nav-link text-white">
+                                    <i class="bi bi-receipt fs-5 me-2"></i><span class="ms-1 d-none d-sm-inline">Hóa Đơn</span>
+                                </a>
+                            </li>
+
+                            @if (role == "ADMIN")
+                            {
+                                <li class="nav-item mb-2">
+                                    <a href="#submenuBaoCao" data-bs-toggle="collapse" class="nav-link text-white">
+                                        <i class="bi bi-flag fs-5 me-2"></i><span class="ms-1 d-none d-sm-inline">Báo cáo</span>
+                                    </a>
+                                    <!-- Menu con của Báo cáo -->
+                                    <ul class="collapse nav flex-column ms-3" id="submenuBaoCao" data-bs-parent="#menu">
+                                        <li class="w-100">
+                                            <a href="#" class="nav-link text-white px-0">📈 Doanh thu</a>
+                                        </li>
+                                    </ul>
                                 </li>
-                                <li class="nav-item">
-                                    <a class="nav-link text-light" href="#">📈 Báo Cáo Doanh Thu</a>
+
+                                <li class="nav-item mb-2">
+                                    <a href="#submenuQuyDinh" data-bs-toggle="collapse" class="nav-link text-white">
+                                        <i class="bi bi-gear fs-5 me-2"></i><span class="ms-1 d-none d-sm-inline">Quy Định</span>
+                                    </a>
+                                    <!-- Menu con của Quy Định -->
+                                    <ul class="collapse nav flex-column ms-3" id="submenuQuyDinh" data-bs-parent="#menu">
+                                        <li class="w-100">
+                                            <a asp-controller="LoaiPhong" asp-action="Index" class="nav-link text-warning px-0">⚙️ Loại Phòng</a>
+                                        </li>
+                                    </ul>
+                                </li>
+
+                                <li class="nav-item mb-2">
+                                    <a asp-controller="Admin" asp-action="GrantAccount" class="nav-link text-white">
+                                        <i class="bi bi-person-badge fs-5 me-2"></i><span class="ms-1 d-none d-sm-inline">Cấp tài khoản</span>
+                                    </a>
                                 </li>
                             }
                         }
                     </ul>
+                    <hr class="w-100 bg-secondary" />
                     
-                    <ul class="navbar-nav">
-                        @if (User.Identity != null && User.Identity.IsAuthenticated)
-                        {
-                            var username = User.Identity.Name?.Trim();
-                            var role = User.Claims.FirstOrDefault(c => c.Type == System.Security.Claims.ClaimTypes.Role)?.Value?.Trim();
-
-                            <li class="nav-item">
-                                <span class="nav-link text-warning fw-bold">Xin chào, @username (@role)</span>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link text-danger fw-bold" asp-controller="Account" asp-action="Logout">Đăng xuất</a>
-                            </li>
-                        }
-                        else
-                        {
-                            <li class="nav-item">
-                                <a class="nav-link text-light" asp-controller="Account" asp-action="Login">Đăng nhập</a>
-                            </li>
-                        }
-                    </ul>
+                    @if (User.Identity != null && User.Identity.IsAuthenticated)
+                    {
+                        var username = User.Identity.Name?.Trim();
+                        <div class="dropdown pb-4 w-100">
+                            <div class="text-white mb-3">
+                                <span class="d-none d-sm-inline">👋 Xin chào,<br /> <b>@username</b></span>
+                            </div>
+                            <a asp-controller="Account" asp-action="Logout" class="btn btn-outline-light w-100">
+                                <i class="bi bi-box-arrow-left"></i> <span class="d-none d-sm-inline">Đăng xuất</span>
+                            </a>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="pb-4 w-100">
+                            <a asp-controller="Account" asp-action="Login" class="btn btn-primary w-100">
+                                Đăng nhập
+                            </a>
+                        </div>
+                    }
                 </div>
             </div>
-        </nav>
-    </header>
-    
-    <div class="container">
-        <main role="main" class="pb-3">
-            @RenderBody()
-        </main>
+
+            <!-- NỘI DUNG CHÍNH (MAIN CONTENT) BÊN PHẢI -->
+            <div class="col py-4 bg-light min-vh-100">
+                <div class="container-fluid">
+                    <main role="main" class="pb-3">
+                        @RenderBody()
+                    </main>
+                </div>
+            </div>
+        </div>
     </div>
 
-    <footer class="border-top footer text-muted mt-5">
-        <div class="container text-center">
-            &copy; 2026 - Hệ thống Quản Lý Khách Sạn
-        </div>
-    </footer>
     <script src="~/lib/jquery/dist/jquery.min.css"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     @await RenderSectionAsync("Scripts", required: false)
