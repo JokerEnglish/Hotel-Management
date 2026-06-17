@@ -13,7 +13,8 @@
 
                 <div class="mb-3">
                     <label class="form-label fw-bold">Ngày Lập Hóa Đơn</label>
-                    <input asp-for="Ngaylaphd" class="form-control text-center" readonly value="@DateTime.Now.ToString("MM/dd/yyyy")" style="background-color: #e9ecef;" />
+                    <input asp-for="Ngaylaphd" type="date" class="form-control" />
+                    <input type="hidden" asp-for="Ngaylaphd" value="@DateTime.Now.ToString("yyyy-MM-dd")" />
                 </div>
 
                 <div class="mb-3">
