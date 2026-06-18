@@ -1,0 +1,66 @@
+﻿@model List<HotelManagement.Models.Phuthu>
+@{
+    ViewData["Title"] = "Quản Lý Loại Phụ Thu";
+}
+
+<div class="container mt-4">
+    <h2 class="text-primary fw-bold mb-4">💰 QUẢN LÝ LOẠI PHỤ THU</h2>
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <p class="text-muted m-0">
+            <i class="bi bi-info-circle"></i> Giá trị phụ thu (%) sẽ được áp dụng khi số khách vượt quá sức chứa tối đa của phòng.
+        </p>
+        <a asp-action="Create" class="btn btn-success fw-bold shadow-sm">+ Thêm Loại Phụ Thu</a>
+    </div>
+
+    <div class="card shadow-sm border-0">
+        <div class="card-body p-0">
+            <table class="table table-hover table-bordered mb-0">
+                <thead class="table-dark text-center">
+                    <tr>
+                        <th style="width: 150px;">Mã Phụ Thu</th>
+                        <th>Giá Trị Phụ Thu (%)</th>
+                        <th style="width: 250px;">Hành Động</th>
+                    </tr>
+                </thead>
+                <tbody class="text-center align-middle">
+                    @if (Model != null && Model.Any())
+                    {
+                        foreach (var item in Model)
+                        {
+                            <tr>
+                                <td class="fw-bold text-secondary">@item.Idphuthu</td>
+                                <td>
+                                    <span class="badge bg-warning text-dark fs-6 px-4 py-2">@item.Giatriphuthu %</span>
+                                </td>
+                                <td>
+                                    <a asp-action="Edit" asp-route-id="@item.Idphuthu"
+                                       class="btn btn-sm btn-outline-warning fw-bold mx-1">✏️ Sửa</a>
+                                    <a asp-action="Delete" asp-route-id="@item.Idphuthu"
+                                       class="btn btn-sm btn-outline-danger fw-bold mx-1"
+                                       onclick="return confirm('Bạn có chắc muốn xóa loại phụ thu này?')">🗑️ Xóa</a>
+                                </td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="3" class="text-muted py-4">Chưa có loại phụ thu nào.</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Giải thích cách hoạt động -->
+    <div class="card mt-4 border-info">
+        <div class="card-body">
+            <h5 class="card-title text-info fw-bold">📌 Cách tính phụ thu</h5>
+            <p class="mb-1">Ví dụ: Phòng có sức chứa tối đa là <strong>2 người</strong>, giá trị phụ thu là <strong>25%</strong>.</p>
+            <p class="mb-1">Nếu có <strong>3 người</strong> ở (vượt 1 người), tiền phụ thu = <strong>Đơn giá × 25% × 1</strong>.</p>
+            <p class="mb-0">Nếu có <strong>4 người</strong> ở (vượt 2 người), tiền phụ thu = <strong>Đơn giá × 25% × 2</strong>.</p>
+        </div>
+    </div>
+</div>

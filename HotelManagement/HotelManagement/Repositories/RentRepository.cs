@@ -21,6 +21,7 @@ namespace HotelManagement.Repositories
             return await _dbContext.Phieuthues
                 .Include(p => p.MakhNavigation)
                 .Include(p => p.MapNavigation)
+                .Include(r => r.MakhNavigation)
                 .ToListAsync();
         }
 
@@ -101,9 +102,10 @@ namespace HotelManagement.Repositories
         public async Task<Phieuthue> GetRentAsync(int mapt)
         {
             return await _dbContext.Phieuthues
-                .Include(r => r.MapNavigation)
-                .Include(r => r.MapNavigation.MaloaiphongNavigation)
-                .FirstOrDefaultAsync(r => r.Mapt == mapt);
+                 .Include(r => r.MakhNavigation)
+                 .Include(r => r.MapNavigation)
+                 .Include(r => r.MapNavigation.MaloaiphongNavigation)
+                 .FirstOrDefaultAsync(r => r.Mapt == mapt);
         }
 
         public async Task<List<Phieuthue>> GetRentByCCCDAsync(string cccd)

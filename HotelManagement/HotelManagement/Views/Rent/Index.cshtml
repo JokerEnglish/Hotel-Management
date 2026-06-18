@@ -1,0 +1,64 @@
+﻿@model List<HotelManagement.Models.Phieuthue>
+@{
+    ViewData["Title"] = "Danh Sách Phiếu Thuê";
+}
+
+<div class="container mt-4">
+    <h2 class="text-primary fw-bold mb-4">📋 DANH SÁCH PHIẾU THUÊ</h2>
+
+    <div class="d-flex justify-content-start mb-4">
+        <a asp-action="Create" class="btn btn-success fw-bold shadow-sm px-4">+ Tạo Phiếu Thuê</a>
+    </div>
+
+    <div class="card shadow-sm border-0">
+        <div class="card-body p-0">
+            <table class="table table-hover table-bordered mb-0">
+                <thead class="table-dark text-center">
+                    <tr>
+                        <th>Mã PT</th>
+                        <th>Ngày Lập Phiếu</th>
+                        <th>Tên Khách Hàng</th>
+                        <th>CCCD</th>
+                        <th>Tên Phòng</th>
+                        <th>Tác Vụ</th>
+                    </tr>
+                </thead>
+                <tbody class="text-center align-middle">
+                    @if (Model != null && Model.Any())
+                    {
+                        foreach (var item in Model)
+                        {
+                            <tr>
+                                <td class="fw-bold text-secondary">PT-@item.Mapt</td>
+                                <td>@item.Ngaylappt.ToString("dd/MM/yyyy")</td>
+                                <td class="fw-bold text-primary">@item.MakhNavigation?.Tenkh</td>
+                                <td>@item.Cccd</td>
+                                <td>
+                                    <span class="badge bg-info text-dark px-3 py-2">
+                                        @item.MapNavigation?.Tenphong
+                                    </span>
+                                </td>
+                                <td>
+                                    <a asp-action="Edit" asp-route-id="@item.Mapt" class="btn btn-sm btn-outline-warning fw-bold mx-1">✏️ Sửa</a>
+                                    <a asp-action="Details" asp-route-id="@item.Mapt" class="btn btn-sm btn-outline-info fw-bold mx-1">ℹ️ Chi Tiết</a>
+                                    <form asp-action="Delete" asp-route-id="@item.Mapt" method="post"
+                                          onsubmit="return confirm('Bạn có chắc chắn muốn xóa phiếu thuê này?');"
+                                          style="display:inline;">
+                                        @Html.AntiForgeryToken()
+                                        <button type="submit" class="btn btn-sm btn-outline-danger fw-bold">🗑️ Xóa</button>
+                                    </form>
+                                </td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="6" class="text-muted py-4">Không có phiếu thuê nào.</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

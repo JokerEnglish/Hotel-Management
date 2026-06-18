@@ -1,0 +1,53 @@
+﻿@{
+    ViewData["Title"] = "Tạo Phiếu Thuê";
+}
+
+<div class="container mt-4" style="max-width: 600px;">
+    <div class="card shadow-sm border-0">
+        <div class="card-header bg-success text-white">
+            <h4 class="mb-0 fw-bold text-center">📝 TẠO PHIẾU THUÊ</h4>
+        </div>
+        <div class="card-body p-4">
+            <form asp-action="Create" method="post">
+                @Html.AntiForgeryToken()
+
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Ngày Lập Phiếu Thuê <span class="text-danger">*</span></label>
+                    <input type="date" name="ngayLapPt" class="form-control"
+                           value="@DateTime.Now.ToString("yyyy-MM-dd")" required />
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Căn Cước Công Dân (CCCD) <span class="text-danger">*</span></label>
+                    <input type="text" name="cccd" class="form-control" placeholder="Nhập số CCCD khách hàng..." required />
+                    @if (ViewBag.ErrorCCCD != null)
+                    {
+                        <div class="text-danger mt-1 small fw-bold">@ViewBag.ErrorCCCD</div>
+                    }
+                    <div class="form-text">⚠️ Khách hàng phải được đăng ký trong hệ thống trước.</div>
+                </div>
+
+                <div class="mb-4">
+                    <label class="form-label fw-bold">Tên Phòng <span class="text-danger">*</span></label>
+                    <select name="tenPhong" class="form-select" required>
+                        <option value="">-- Chọn Phòng Trống --</option>
+                        @foreach (var phong in ViewBag.DanhSachPhong as List<Microsoft.AspNetCore.Mvc.Rendering.SelectListItem>)
+                        {
+                            <option value="@phong.Value">@phong.Text</option>
+                        }
+                    </select>
+                    @if (ViewBag.ErrorPhong != null)
+                    {
+                        <div class="text-danger mt-1 small fw-bold">@ViewBag.ErrorPhong</div>
+                    }
+                    <div class="form-text text-success fw-bold">✅ Chỉ hiển thị các phòng đang trống.</div>
+                </div>
+
+                <div class="d-flex gap-2">
+                    <button type="submit" class="btn btn-success fw-bold px-4">✅ Tạo Phiếu</button>
+                    <a asp-action="Index" class="btn btn-outline-secondary px-4">Hủy</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

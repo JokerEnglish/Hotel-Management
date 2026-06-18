@@ -62,9 +62,11 @@ namespace HotelManagement.Repositories
         public async Task<List<Phong>> GetRoomsByTinhtrangAsync(int tinhtrang, int roomid = 0)
         {
             return await _dbContext.Phongs
+                .Include(r => r.MaloaiphongNavigation)
                 .Where(r => r.Tinhtrang == tinhtrang || r.Map == roomid)
                 .ToListAsync();
         }
+
         public async Task<Phong> GetRoomByNameAsync(string tenphong)
         {
             return await _dbContext.Phongs.FirstOrDefaultAsync(p => p.Tenphong == tenphong);

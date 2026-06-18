@@ -59,7 +59,7 @@
 
                             <!-- Menu Phiếu thuê -->
                             <li class="nav-item mb-2">
-                                <a href="#" class="nav-link text-white">
+                                <a asp-controller="Rent" asp-action="Index" class="nav-link text-white">
                                     <i class="bi bi-card-list fs-5 me-2"></i><span class="ms-1 d-none d-sm-inline">Phiếu thuê</span>
                                 </a>
                             </li>
@@ -93,6 +93,15 @@
                                         <li class="w-100">
                                             <a asp-controller="LoaiPhong" asp-action="Index" class="nav-link text-warning px-0">⚙️ Loại Phòng</a>
                                         </li>
+
+                                        <li class="w-100">
+                                            <a asp-controller="LoaiKhach" asp-action="Index" class="nav-link text-warning px-0">👥 Loại Khách</a>
+                                        </li>
+
+                                        <li class="w-100">
+                                            <a asp-controller="Phuthu" asp-action="Index" class="nav-link text-warning px-0">💰 Loại Phụ Thu</a>
+                                        </li>
+
                                     </ul>
                                 </li>
 
