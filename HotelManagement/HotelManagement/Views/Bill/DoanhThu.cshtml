@@ -1,0 +1,395 @@
+@model HotelManagement.ViewModels.DoanhThuFilterViewModel
+
+@{
+    ViewData["Title"] = "Báo Cáo Doanh Thu";
+    string tuNgayStr  = Model.TuNgay.HasValue  ? Model.TuNgay.Value.ToString("yyyy-MM-dd")  : "";
+    string denNgayStr = Model.DenNgay.HasValue ? Model.DenNgay.Value.ToString("yyyy-MM-dd") : "";
+}
+
+<style>
+    /* ============================================================
+       BÁO CÁO DOANH THU – Custom Styles
+    ============================================================ */
+    :root {
+        --indigo-900: #1a237e;
+        --indigo-800: #283593;
+        --indigo-700: #303f9f;
+        --indigo-100: #e8eaf6;
+        --green-700:  #388e3c;
+        --green-50:   #e8f5e9;
+        --amber-600:  #f59e0b;
+        --red-500:    #ef4444;
+        --surface:    #f8f9ff;
+    }
+
+    /* ── Trang tổng thể ── */
+    .doanhthu-page { background: var(--surface); min-height: 100vh; }
+
+    /* ── Hero Banner ── */
+    .dt-hero {
+        background: linear-gradient(135deg, var(--indigo-900) 0%, #3949ab 50%, #5c6bc0 100%);
+        border-radius: 16px;
+        padding: 28px 36px;
+        margin-bottom: 24px;
+        box-shadow: 0 8px 32px rgba(26,35,126,.25);
+        position: relative;
+        overflow: hidden;
+    }
+    .dt-hero::before {
+        content: '';
+        position: absolute; inset: 0;
+        background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.04'%3E%3Ccircle cx='30' cy='30' r='20'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E") repeat;
+    }
+    .dt-hero h1 { color: #fff; font-weight: 800; font-size: 1.9rem; margin: 0; position: relative; }
+    .dt-hero p  { color: rgba(255,255,255,.75); margin: 4px 0 0; position: relative; }
+    .dt-hero-icon {
+        font-size: 4rem; opacity: .15;
+        position: absolute; right: 36px; top: 16px;
+    }
+
+    /* ── Thẻ thống kê ── */
+    .stat-cards { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; margin-bottom: 24px; }
+    @@media(max-width:768px){ .stat-cards { grid-template-columns: 1fr; } }
+
+    .stat-card {
+        background: #fff;
+        border-radius: 14px;
+        padding: 20px 24px;
+        box-shadow: 0 4px 20px rgba(0,0,0,.07);
+        display: flex; align-items: center; gap: 16px;
+        transition: transform .2s, box-shadow .2s;
+    }
+    .stat-card:hover { transform: translateY(-3px); box-shadow: 0 8px 30px rgba(0,0,0,.12); }
+    .stat-icon {
+        width: 52px; height: 52px; border-radius: 14px;
+        display: flex; align-items: center; justify-content: center;
+        font-size: 1.6rem; flex-shrink: 0;
+    }
+    .stat-icon.blue  { background: var(--indigo-100); }
+    .stat-icon.green { background: var(--green-50); }
+    .stat-icon.amber { background: #fff8e1; }
+    .stat-label { font-size: .8rem; color: #6b7280; font-weight: 500; text-transform: uppercase; letter-spacing: .04em; }
+    .stat-value { font-size: 1.5rem; font-weight: 800; color: #1f2937; line-height: 1.1; }
+    .stat-value.money { color: var(--green-700); }
+
+    /* ── Bộ lọc ── */
+    .filter-card {
+        background: #fff;
+        border-radius: 14px;
+        padding: 20px 24px;
+        box-shadow: 0 4px 20px rgba(0,0,0,.07);
+        margin-bottom: 24px;
+    }
+    .filter-card label { font-weight: 600; font-size: .85rem; color: #374151; }
+    .filter-card .form-control {
+        border-radius: 8px;
+        border: 1.5px solid #e5e7eb;
+        padding: 8px 12px;
+        transition: border-color .2s;
+    }
+    .filter-card .form-control:focus { border-color: var(--indigo-700); box-shadow: 0 0 0 3px rgba(48,63,159,.12); }
+
+    .btn-filter {
+        background: linear-gradient(135deg, var(--indigo-800), var(--indigo-700));
+        color: #fff; border: none; border-radius: 8px;
+        padding: 9px 24px; font-weight: 600;
+        transition: transform .15s, box-shadow .15s;
+    }
+    .btn-filter:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(40,53,147,.4); color: #fff; }
+
+    .btn-excel {
+        background: linear-gradient(135deg, #1b5e20, var(--green-700));
+        color: #fff; border: none; border-radius: 8px;
+        padding: 9px 24px; font-weight: 600;
+        transition: transform .15s, box-shadow .15s;
+        text-decoration: none; display: inline-flex; align-items: center; gap: 6px;
+    }
+    .btn-excel:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(27,94,32,.4); color: #fff; }
+
+    .btn-reset {
+        background: #f3f4f6; color: #374151; border: 1.5px solid #e5e7eb;
+        border-radius: 8px; padding: 9px 20px; font-weight: 600;
+        transition: background .15s;
+    }
+    .btn-reset:hover { background: #e5e7eb; }
+
+    /* ── Bảng dữ liệu ── */
+    .table-card {
+        background: #fff;
+        border-radius: 14px;
+        box-shadow: 0 4px 20px rgba(0,0,0,.07);
+        overflow: hidden;
+    }
+    .table-card .table-header {
+        background: linear-gradient(135deg, var(--indigo-900), var(--indigo-800));
+        padding: 16px 24px;
+        color: #fff;
+        display: flex; align-items: center; justify-content: space-between;
+        flex-wrap: wrap; gap: 10px;
+    }
+    .table-card .table-header h5 { margin: 0; font-weight: 700; font-size: 1rem; }
+
+    .dt-table { margin: 0; font-size: .88rem; }
+    .dt-table thead th {
+        background: var(--indigo-100) !important;
+        color: var(--indigo-900) !important;
+        font-weight: 700;
+        border-bottom: 2px solid #c5cae9 !important;
+        white-space: nowrap;
+        padding: 12px 14px;
+        vertical-align: middle;
+    }
+    .dt-table tbody tr { transition: background .15s; }
+    .dt-table tbody tr:hover { background: #f0f4ff !important; }
+    .dt-table tbody td { padding: 11px 14px; vertical-align: middle; border-bottom: 1px solid #f1f5f9; }
+
+    .badge-phong {
+        background: var(--indigo-100); color: var(--indigo-900);
+        padding: 3px 10px; border-radius: 20px; font-size: .78rem; font-weight: 600;
+    }
+    .badge-mapt {
+        background: #e8f5e9; color: #1b5e20;
+        padding: 3px 10px; border-radius: 20px; font-size: .78rem; font-weight: 600;
+    }
+    .badge-da-xoa {
+        background: #fef2f2; color: #991b1b;
+        padding: 3px 10px; border-radius: 20px; font-size: .78rem;
+    }
+    .money-cell { font-weight: 700; color: var(--green-700); }
+    .tyle-cell { color: var(--amber-600); font-weight: 600; }
+
+    /* ── Tổng cộng ── */
+    .total-row {
+        background: linear-gradient(135deg, var(--indigo-900), var(--indigo-800)) !important;
+        color: #fff !important;
+    }
+    .total-row td { color: #fff !important; font-weight: 700; font-size: .95rem; border: none !important; }
+
+    /* ── Empty state ── */
+    .empty-state { text-align: center; padding: 64px 32px; }
+    .empty-icon { font-size: 4rem; opacity: .3; }
+
+    /* ── Animate ── */
+    @@keyframes fadeInUp {
+        from { opacity: 0; transform: translateY(16px); }
+        to   { opacity: 1; transform: translateY(0); }
+    }
+    .animate-in { animation: fadeInUp .4s ease both; }
+    .animate-in:nth-child(2) { animation-delay: .07s; }
+    .animate-in:nth-child(3) { animation-delay: .14s; }
+</style>
+
+<div class="doanhthu-page px-2">
+
+    <!-- ── Hero Banner ── -->
+    <div class="dt-hero animate-in">
+        <span class="dt-hero-icon">📊</span>
+        <h1>📊 Báo Cáo Doanh Thu</h1>
+        <p>Thống kê doanh thu – kết hợp Phiếu Thuê &amp; Hóa Đơn đầy đủ</p>
+    </div>
+
+    <!-- ── Thẻ thống kê tổng hợp ── -->
+    <div class="stat-cards animate-in">
+        <div class="stat-card">
+            <div class="stat-icon blue">💰</div>
+            <div>
+                <div class="stat-label">Tổng Doanh Thu</div>
+                <div class="stat-value money">@Model.TongDoanhThu.ToString("N0") ₫</div>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon green">🧾</div>
+            <div>
+                <div class="stat-label">Số Hóa Đơn</div>
+                <div class="stat-value">@Model.SoHoaDon</div>
+            </div>
+        </div>
+        </div>
+
+
+    <!-- ── Bộ lọc thời gian ── -->
+    <div class="filter-card animate-in">
+        <form method="get" asp-controller="Bill" asp-action="DoanhThu" class="row g-3 align-items-end">
+            <div class="col-md-3">
+                <label for="tuNgay">📅 Từ Ngày</label>
+                <input type="date" id="tuNgay" name="tuNgay" class="form-control"
+                       value="@tuNgayStr" />
+            </div>
+            <div class="col-md-3">
+                <label for="denNgay">📅 Đến Ngày</label>
+                <input type="date" id="denNgay" name="denNgay" class="form-control"
+                       value="@denNgayStr" />
+            </div>
+            <div class="col-md-6 d-flex gap-2 flex-wrap">
+                <button type="submit" class="btn-filter">
+                    🔍 Lọc Dữ Liệu
+                </button>
+                <a href="@Url.Action("ExportExcel", "Bill", new { tuNgay = tuNgayStr, denNgay = denNgayStr })"
+                   class="btn-excel">
+                    📥 Xuất Excel
+                </a>
+                <a href="@Url.Action("DoanhThu", "Bill")" class="btn-reset">
+                    🔄 Đặt Lại
+                </a>
+            </div>
+        </form>
+
+        @if (Model.TuNgay.HasValue || Model.DenNgay.HasValue)
+        {
+            <div class="mt-3 p-2 rounded" style="background:#e8eaf6; font-size:.85rem; color:#283593;">
+                <strong>📌 Kỳ báo cáo:</strong>
+                @if (Model.TuNgay.HasValue && Model.DenNgay.HasValue)
+                {
+                    <span>Từ <b>@Model.TuNgay.Value.ToString("dd/MM/yyyy")</b> đến <b>@Model.DenNgay.Value.ToString("dd/MM/yyyy")</b></span>
+                }
+                else if (Model.TuNgay.HasValue)
+                {
+                    <span>Từ ngày <b>@Model.TuNgay.Value.ToString("dd/MM/yyyy")</b></span>
+                }
+                else
+                {
+                    <span>Đến ngày <b>@Model.DenNgay.Value.ToString("dd/MM/yyyy")</b></span>
+                }
+            </div>
+        }
+    </div>
+
+    <!-- ── Bảng dữ liệu ── -->
+    <div class="table-card animate-in">
+        <div class="table-header">
+            <h5>🧾 Danh Sách Hóa Đơn Chi Tiết</h5>
+            <span style="font-size:.82rem; opacity:.8;">
+                Tổng: <strong>@Model.SoHoaDon</strong> hóa đơn
+                &nbsp;|&nbsp;
+                Doanh thu: <strong>@Model.TongDoanhThu.ToString("N0") ₫</strong>
+            </span>
+        </div>
+
+        @if (!Model.DanhSach.Any())
+        {
+            <div class="empty-state">
+                <div class="empty-icon">📭</div>
+                <h5 class="mt-3 text-muted">Không có dữ liệu</h5>
+                <p class="text-muted">Không tìm thấy hóa đơn nào trong khoảng thời gian đã chọn.</p>
+            </div>
+        }
+        else
+        {
+            <div class="table-responsive">
+                <table class="table dt-table">
+                    <thead>
+                        <tr>
+                            <th class="text-center">#</th>
+                            <th class="text-center">Mã HĐ</th>
+                            <th>Tên Khách Hàng</th>
+                            <th class="text-center">CCCD</th>
+                            <th class="text-center">Tên Phòng</th>
+                            <th class="text-center">Số Ngày</th>
+                            <th class="text-center">Ngày Đặt</th>
+                            <th class="text-center">Ngày Lập HĐ</th>
+                            <th class="text-center">Tỷ Lệ PH</th>
+                            <th class="text-end">Tổng Tiền (₫)</th>
+                            <th class="text-center">Mã Phiếu Thuê</th>
+                            <th>Ngày Lập PT</th>
+                            <th>Nhân Viên Lập HĐ</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @{ int stt = 1; long tongCong = 0; }
+                        @foreach (var row in Model.DanhSach)
+                        {
+                            tongCong += row.Tongtien;
+                            <tr>
+                                <td class="text-center text-muted">@stt</td>
+                                <td class="text-center">
+                                    <span class="fw-bold text-primary">#@row.Mahd</span>
+                                </td>
+                                <td>
+                                    <span class="fw-semibold">@row.Tenkh</span>
+                                </td>
+                                <td class="text-center">
+                                    <code style="font-size:.8rem; background:#f1f5f9; padding:2px 6px; border-radius:4px;">@row.Cccd</code>
+                                </td>
+                                <td class="text-center">
+                                    <span class="badge-phong">🏠 @row.Tenphong</span>
+                                </td>
+                                <td class="text-center">
+                                    <span class="fw-semibold">@row.Songayo</span>
+                                    <small class="text-muted"> ngày</small>
+                                </td>
+                                <td class="text-center">@row.Ngaydat.ToString("dd/MM/yyyy")</td>
+                                <td class="text-center">@row.Ngaylaphd.ToString("dd/MM/yyyy")</td>
+                                <td class="text-center tyle-cell">
+                                    @if (row.Tylephuthu > 0)
+                                    {
+                                        <span>@row.Tylephuthu.ToString("0.##")%</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">—</span>
+                                    }
+                                </td>
+                                <td class="text-end money-cell">
+                                    @row.Tongtien.ToString("N0")
+                                </td>
+                                <td class="text-center">
+                                    @if (row.Mapt.HasValue)
+                                    {
+                                        <span class="badge-mapt">PT#@row.Mapt</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge-da-xoa">Đã xóa</span>
+                                    }
+                                </td>
+                                <td>
+                                    @if (row.Ngaylappt.HasValue)
+                                    {
+                                        <span>@row.Ngaylappt.Value.ToString("dd/MM/yyyy")</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">—</span>
+                                    }
+                                </td>
+                                <td>
+                                    <div class="d-flex align-items-center gap-1">
+                                        <span style="width:26px; height:26px; background:var(--indigo-100); border-radius:50%; display:inline-flex; align-items:center; justify-content:center; font-size:.7rem; font-weight:700; color:var(--indigo-900);">
+                                            @(row.HoTenNhanVien.Length > 0 ? row.HoTenNhanVien[0].ToString().ToUpper() : "N")
+                                        </span>
+                                        <span>@row.HoTenNhanVien</span>
+                                    </div>
+                                </td>
+                            </tr>
+                            stt++;
+                        }
+                    </tbody>
+                    <tfoot>
+                        <tr class="total-row">
+                            <td colspan="9" class="text-end pe-4" style="font-size:.95rem;">
+                                💰 TỔNG CỘNG (@Model.SoHoaDon hóa đơn):
+                            </td>
+                            <td class="text-end" style="font-size:1.05rem;">
+                                @tongCong.ToString("N0") ₫
+                            </td>
+                            <td colspan="3"></td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        }
+    </div>
+
+</div>
+
+@section Scripts {
+<script>
+    // Tự động cập nhật min/max cho bộ lọc ngày
+    document.getElementById('tuNgay').addEventListener('change', function () {
+        document.getElementById('denNgay').min = this.value;
+    });
+    document.getElementById('denNgay').addEventListener('change', function () {
+        document.getElementById('tuNgay').max = this.value;
+    });
+</script>
+}

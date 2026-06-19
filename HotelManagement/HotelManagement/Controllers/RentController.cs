@@ -1,4 +1,4 @@
-﻿using HotelManagement.InterfacesRepositories;
+using HotelManagement.InterfacesRepositories;
 using HotelManagement.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -29,7 +29,7 @@ namespace HotelManagement.Controllers
 
         // 2. Tạo phiếu thuê (GET) - Chỉ hiện phòng TRỐNG (Tinhtrang == 1)
         [HttpGet]
-        public async Task<IActionResult> Create()
+        public async Task<IActionResult> Create(string roomName = null)
         {
             // Lấy danh sách phòng TRỐNG, kèm tên loại phòng
             var phongsAvailable = await _phongRepo.GetRoomsByTinhtrangAsync(1);
@@ -42,6 +42,7 @@ namespace HotelManagement.Controllers
             }).ToList();
 
             ViewBag.DanhSachPhong = phongSelectList;
+            ViewBag.SelectedRoom = roomName;
             return View();
         }
 

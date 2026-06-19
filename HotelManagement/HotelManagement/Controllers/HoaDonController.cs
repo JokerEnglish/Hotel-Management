@@ -1,5 +1,7 @@
-﻿using HotelManagement.InterfacesRepositories;
+using HotelManagement.InterfacesRepositories;
 using HotelManagement.Models;
+using HotelManagement.ViewModels;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -10,7 +12,6 @@ using System.Linq;
 using System.Threading.Tasks;
 
 using HotelManagement.Repositories;
-using HotelManagement.ViewModels;
 
 namespace HotelManagement.Controllers
 {
@@ -124,7 +125,11 @@ namespace HotelManagement.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Mahd,Songayo,Manv,Tongtien,Tenkh,Tenphong,Ngaylaphd,Ngaydat,Tylephuthu,Cccd")] Hoadon hoadon)
         {
-
+            if (TempData["Mapt"] != null)
+            {
+                hoadon.Mapt = (int)TempData["Mapt"];
+                TempData.Keep("Mapt"); // Keep it in case we need it below
+            }
             await _billRepository.CreateBill(hoadon);
             await _rentRepository.DeleteAsync((int)TempData["Mapt"]);
             bool check = await _rentRepository.CheckCCCDExistsInPhieuthueAsync(hoadon.Cccd);
@@ -214,6 +219,44 @@ namespace HotelManagement.Controllers
             }
             int id = client.Makh;
             return RedirectToAction("Test", new { id = id });
+        }
+
+        // ===== BÁO CÁO DOANH THU =====
+
+        /// <summary>
+        /// GET: /Bill/DoanhThu?tuNgay=2026-01-01&amp;denNgay=2026-06-30
+        /// Hiển thị trang báo cáo doanh thu, có bộ lọc thời gian
+        /// </summary>
+        [HttpGet]
+        [Authorize]
+        public async Task<IActionResult> DoanhThu(DateTime? tuNgay, DateTime? denNgay)
+        {
+            // Mặc định: nếu không truyền ngày, lấy tháng hiện tại
+            if (!tuNgay.HasValue && !denNgay.HasValue)
+            {
+                tuNgay  = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1);
+                denNgay = DateTime.Now;
+            }
+
+            var vm = await _billRepository.GetDoanhThuAsync(tuNgay, denNgay);
+            return View(vm);
+        }
+
+        /// <summary>
+        /// GET: /Bill/ExportExcel?tuNgay=2026-01-01&amp;denNgay=2026-06-30
+        /// Xuất file Excel báo cáo doanh thu về máy user
+        /// </summary>
+        [HttpGet]
+        [Authorize]
+        public async Task<IActionResult> ExportExcel(DateTime? tuNgay, DateTime? denNgay)
+        {
+            var excelBytes = await _billRepository.ExportDoanhThuExcelAsync(tuNgay, denNgay);
+            string tenFile = $"BaoCaoDoanhThu_{DateTime.Now:yyyyMMdd_HHmmss}.xlsx";
+            return File(
+                excelBytes,
+                "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                tenFile
+            );
         }
 
     }

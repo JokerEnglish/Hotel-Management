@@ -1,4 +1,4 @@
-﻿@{
+@{
     ViewData["Title"] = "Tạo Phiếu Thuê";
 }
 
@@ -33,7 +33,14 @@
                         <option value="">-- Chọn Phòng Trống --</option>
                         @foreach (var phong in ViewBag.DanhSachPhong as List<Microsoft.AspNetCore.Mvc.Rendering.SelectListItem>)
                         {
-                            <option value="@phong.Value">@phong.Text</option>
+                            if (ViewBag.SelectedRoom != null && ViewBag.SelectedRoom.ToString() == phong.Value)
+                            {
+                                <option value="@phong.Value" selected>@phong.Text</option>
+                            }
+                            else
+                            {
+                                <option value="@phong.Value">@phong.Text</option>
+                            }
                         }
                     </select>
                     @if (ViewBag.ErrorPhong != null)

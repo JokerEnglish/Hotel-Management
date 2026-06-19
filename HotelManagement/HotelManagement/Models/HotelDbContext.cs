@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 
@@ -64,6 +64,7 @@ public partial class HotelDbContext : DbContext
                 .HasColumnName("TENPHONG");
             entity.Property(e => e.Tongtien).HasColumnName("TONGTIEN");
             entity.Property(e => e.Tylephuthu).HasColumnName("TYLEPHUTHU");
+            entity.Property(e => e.Mapt).HasColumnName("MAPT");
 
             entity.HasOne(d => d.ManvNavigation).WithMany(p => p.Hoadons)
                 .HasForeignKey(d => d.Manv)

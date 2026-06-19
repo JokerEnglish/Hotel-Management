@@ -1,8 +1,244 @@
-﻿@{
-    ViewData["Title"] = "Home Page";
+@model HotelManagement.ViewModels.PaginatedList<HotelManagement.Models.Phong>
+@{
+    ViewData["Title"] = "Trang Chủ - Danh Sách Phòng";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<style>
+    .home-hero {
+        background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+        color: white;
+        padding: 3rem 2rem;
+        border-radius: 16px;
+        margin-bottom: 2rem;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        position: relative;
+        overflow: hidden;
+    }
+    .home-hero::after {
+        content: '';
+        position: absolute;
+        top: -50%;
+        right: -10%;
+        width: 300px;
+        height: 300px;
+        background: rgba(255,255,255,0.1);
+        border-radius: 50%;
+        filter: blur(40px);
+    }
+    .search-box {
+        background: white;
+        padding: 8px;
+        border-radius: 50px;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+        max-width: 600px;
+        margin: 0 auto;
+    }
+    .search-box input {
+        border: none;
+        box-shadow: none;
+        padding-left: 20px;
+        border-radius: 50px;
+    }
+    .search-box input:focus {
+        box-shadow: none;
+        outline: none;
+    }
+    .search-box button {
+        border-radius: 50px;
+        padding: 10px 25px;
+        font-weight: 600;
+    }
+    .room-grid {
+        display: grid;
+        grid-template-columns: repeat(5, 1fr);
+        gap: 20px;
+        margin-bottom: 30px;
+    }
+    @@media (max-width: 1200px) { .room-grid { grid-template-columns: repeat(4, 1fr); } }
+    @@media (max-width: 992px) { .room-grid { grid-template-columns: repeat(3, 1fr); } }
+    @@media (max-width: 768px) { .room-grid { grid-template-columns: repeat(2, 1fr); } }
+    @@media (max-width: 480px) { .room-grid { grid-template-columns: 1fr; } }
+    
+    .room-card {
+        background: white;
+        border-radius: 16px;
+        padding: 20px;
+        text-align: center;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+        transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+        border: 1px solid #f0f0f0;
+        position: relative;
+        overflow: hidden;
+    }
+    .room-card:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 12px 25px rgba(0,0,0,0.08);
+        border-color: #e0e0e0;
+    }
+    .room-icon {
+        font-size: 2.5rem;
+        margin-bottom: 10px;
+        display: inline-block;
+        color: #2a5298;
+    }
+    .room-title {
+        font-weight: 700;
+        font-size: 1.25rem;
+        color: #2c3e50;
+        margin-bottom: 5px;
+    }
+    .room-type {
+        color: #7f8c8d;
+        font-size: 0.9rem;
+        margin-bottom: 15px;
+    }
+    .room-price {
+        font-weight: 700;
+        color: #e67e22;
+        font-size: 1.1rem;
+        background: rgba(230, 126, 34, 0.1);
+        padding: 5px 10px;
+        border-radius: 8px;
+        display: inline-block;
+        margin-bottom: 15px;
+    }
+    .room-status {
+        font-weight: 600;
+        padding: 6px 15px;
+        border-radius: 50px;
+        font-size: 0.85rem;
+        display: inline-block;
+    }
+    .status-trong { background: #e8f5e9; color: #2e7d32; }
+    .status-dangthue { background: #ffebee; color: #c62828; }
+    .status-baotri { background: #fff3e0; color: #ef6c00; }
+    
+    .pagination-container {
+        display: flex;
+        justify-content: center;
+        margin-top: 2rem;
+    }
+    .page-link {
+        border-radius: 8px;
+        margin: 0 5px;
+        color: #2a5298;
+        font-weight: 600;
+        border: 1px solid #e2e8f0;
+    }
+    .page-item.active .page-link {
+        background-color: #2a5298;
+        border-color: #2a5298;
+        color: white;
+    }
+</style>
+
+<div class="home-hero text-center animate-in">
+    <h1 class="fw-bold mb-3">Hệ Thống Hiện Phòng</h1>
+    <p class="mb-4 text-white-50">Lựa chọn phòng phù hợp cho khách hàng của bạn nhanh chóng và dễ dàng</p>
+    
+    <form asp-action="Index" method="get">
+        <div class="search-box d-flex">
+            <input type="text" name="searchString" value="@ViewData["CurrentFilter"]" class="form-control" placeholder="Nhập tên phòng cần tìm..." />
+            <button type="submit" class="btn btn-primary px-4">🔍 Tìm kiếm</button>
+        </div>
+    </form>
 </div>
+
+<div class="container-fluid px-0 animate-in" style="animation-delay: 0.1s;">
+    @if (!Model.Items.Any())
+    {
+        <div class="text-center p-5 bg-white rounded-4 shadow-sm border">
+            <h3 class="text-muted">📭 Không tìm thấy phòng nào</h3>
+            <p>Vui lòng thử lại với từ khóa khác.</p>
+        </div>
+    }
+    else
+    {
+        <div class="room-grid">
+            @foreach (var room in Model.Items)
+            {
+                <div class="room-card">
+                    <div class="room-icon">🚪</div>
+                    <div class="room-title">@room.Tenphong</div>
+                    <div class="room-type">
+                        @(room.MaloaiphongNavigation != null ? room.MaloaiphongNavigation.Tenloai : "Phòng Thường")
+                        <br/>
+                        <small class="text-muted">👤 Tối đa: @room.Soluongkhachtoida người</small>
+                    </div>
+                    
+                    <div class="room-price">
+                        @(room.MaloaiphongNavigation != null ? room.MaloaiphongNavigation.Dongia.ToString("N0") + " ₫/ngày" : "Đang cập nhật")
+                    </div>
+                    
+                    <div>
+                        @if (room.Tinhtrang == 1)
+                        {
+                            <span class="room-status status-trong mb-2">✅ Trống</span>
+                            <div class="mt-2">
+                                <a asp-controller="Rent" asp-action="Create" asp-route-roomName="@room.Tenphong" class="btn btn-sm btn-success rounded-pill fw-bold px-4 shadow-sm w-100">
+                                    🛒 Đặt Phòng
+                                </a>
+                            </div>
+                        }
+                        else if (room.Tinhtrang == 2)
+                        {
+                            <span class="room-status status-dangthue">❌ Đang Thuê</span>
+                        }
+                        else
+                        {
+                            <span class="room-status status-baotri">⚠️ Bảo Trì</span>
+                        }
+                    </div>
+                </div>
+            }
+        </div>
+
+        <!-- Phân trang -->
+        <div class="pagination-container">
+            <ul class="pagination">
+                <!-- Nút Trước -->
+                <li class="page-item @(!Model.HasPreviousPage ? "disabled" : "")">
+                    <a class="page-link" asp-action="Index"
+                       asp-route-pageNumber="@(Model.PageIndex - 1)"
+                       asp-route-searchString="@ViewData["CurrentFilter"]">
+                        « Trước
+                    </a>
+                </li>
+                
+                <!-- Hiển thị số trang -->
+                @for (int i = 1; i <= Model.TotalPages; i++)
+                {
+                    <li class="page-item @(i == Model.PageIndex ? "active" : "")">
+                        <a class="page-link" asp-action="Index"
+                           asp-route-pageNumber="@i"
+                           asp-route-searchString="@ViewData["CurrentFilter"]">@i</a>
+                    </li>
+                }
+
+                <!-- Nút Tiếp -->
+                <li class="page-item @(!Model.HasNextPage ? "disabled" : "")">
+                    <a class="page-link" asp-action="Index"
+                       asp-route-pageNumber="@(Model.PageIndex + 1)"
+                       asp-route-searchString="@ViewData["CurrentFilter"]">
+                        Tiếp »
+                    </a>
+                </li>
+            </ul>
+        </div>
+    }
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        var elements = document.querySelectorAll('.animate-in');
+        elements.forEach((el, index) => {
+            el.style.opacity = '0';
+            el.style.transform = 'translateY(20px)';
+            el.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+            setTimeout(() => {
+                el.style.opacity = '1';
+                el.style.transform = 'translateY(0)';
+            }, 100 * index);
+        });
+    });
+</script>

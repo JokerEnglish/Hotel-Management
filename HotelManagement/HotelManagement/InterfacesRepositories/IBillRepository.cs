@@ -1,4 +1,5 @@
-﻿using HotelManagement.Models;
+using HotelManagement.Models;
+using HotelManagement.ViewModels;
 
 public interface IBillRepository
 {
@@ -9,4 +10,7 @@ public interface IBillRepository
     Task DeleteBill(int id);
     Task<bool> BillExists(int id);
 
+    // ===== Báo Cáo Doanh Thu =====
+    Task<DoanhThuFilterViewModel> GetDoanhThuAsync(DateTime? tuNgay, DateTime? denNgay);
+    Task<byte[]> ExportDoanhThuExcelAsync(DateTime? tuNgay, DateTime? denNgay);
 }

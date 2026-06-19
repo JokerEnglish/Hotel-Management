@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 
 namespace HotelManagement.Models;
@@ -24,6 +24,8 @@ public partial class Hoadon
     public double Tylephuthu { get; set; }
 
     public string Cccd { get; set; } = null!;
+
+    public int? Mapt { get; set; }
 
     public virtual Nhanvien ManvNavigation { get; set; } = null!;
 }
