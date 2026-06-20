@@ -175,9 +175,18 @@
                         {
                             <span class="room-status status-trong mb-2">✅ Trống</span>
                             <div class="mt-2">
-                                <a asp-controller="Rent" asp-action="Create" asp-route-roomName="@room.Tenphong" class="btn btn-sm btn-success rounded-pill fw-bold px-4 shadow-sm w-100">
-                                    🛒 Đặt Phòng
-                                </a>
+                                @if (User.IsInRole("Customer"))
+                                {
+                                    <a asp-controller="DatPhong" asp-action="Book" asp-route-roomId="@room.Map" class="btn btn-sm btn-success rounded-pill fw-bold px-4 shadow-sm w-100">
+                                        🛒 Đặt Phòng
+                                    </a>
+                                }
+                                else
+                                {
+                                    <a asp-controller="Rent" asp-action="Create" asp-route-roomName="@room.Tenphong" class="btn btn-sm btn-primary rounded-pill fw-bold px-4 shadow-sm w-100">
+                                        📝 Lập Phiếu Thuê
+                                    </a>
+                                }
                             </div>
                         }
                         else if (room.Tinhtrang == 2)

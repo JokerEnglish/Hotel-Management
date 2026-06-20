@@ -43,19 +43,35 @@
                                 </li>
                             }
 
-                            <!-- Menu Khách -->
-                            <li class="nav-item mb-2">
-                                <a asp-controller="Client" asp-action="Index" class="nav-link text-white">
-                                    <i class="bi bi-person fs-5 me-2"></i><span class="ms-1 d-none d-sm-inline">Khách</span>
-                                </a>
-                            </li>
+                            @if (role != "Customer")
+                            {
+                                <!-- Menu Khách -->
+                                <li class="nav-item mb-2">
+                                    <a asp-controller="Client" asp-action="Index" class="nav-link text-white">
+                                        <i class="bi bi-person fs-5 me-2"></i><span class="ms-1 d-none d-sm-inline">Khách</span>
+                                    </a>
+                                </li>
 
+                                <li class="nav-item mb-2">
+                                    <a asp-controller="Room" asp-action="RoomList" class="nav-link text-white">
+                                        <i class="bi bi-building fs-5 me-2"></i><span class="ms-1 d-none d-sm-inline">Phòng</span>
+                                    </a>
+                                </li>
 
-                            <li class="nav-item mb-2">
-                                <a asp-controller="Room" asp-action="RoomList" class="nav-link text-white">
-                                    <i class="bi bi-building fs-5 me-2"></i><span class="ms-1 d-none d-sm-inline">Phòng</span>
-                                </a>
-                            </li>
+                                <li class="nav-item mb-2">
+                                    <a asp-controller="DatPhong" asp-action="Index" class="nav-link text-white">
+                                        <i class="bi bi-calendar-check fs-5 me-2"></i><span class="ms-1 d-none d-sm-inline">Duyệt Đặt Phòng</span>
+                                    </a>
+                                </li>
+                            }
+                            else
+                            {
+                                <li class="nav-item mb-2">
+                                    <a asp-controller="DatPhong" asp-action="MyBookings" class="nav-link text-white">
+                                        <i class="bi bi-journal-bookmark fs-5 me-2"></i><span class="ms-1 d-none d-sm-inline">Lịch sử Đặt phòng</span>
+                                    </a>
+                                </li>
+                            }
 
                             <!-- Menu Phiếu thuê -->
                             <li class="nav-item mb-2">
@@ -130,8 +146,11 @@
                     else
                     {
                         <div class="pb-4 w-100">
-                            <a asp-controller="Account" asp-action="Login" class="btn btn-primary w-100">
+                            <a asp-controller="Account" asp-action="Login" class="btn btn-primary w-100 mb-2">
                                 Đăng nhập
+                            </a>
+                            <a asp-controller="Account" asp-action="Register" class="btn btn-outline-primary w-100">
+                                Đăng ký
                             </a>
                         </div>
                     }

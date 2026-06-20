@@ -1,0 +1,74 @@
+@model IEnumerable<HotelManagement.Models.DatPhong>
+@{
+    ViewData["Title"] = "Đơn Đặt Phòng Của Tôi";
+}
+
+<div class="container mt-5">
+    <h2 class="text-primary fw-bold mb-4">🏨 DANH SÁCH ĐẶT PHÒNG CỦA TÔI</h2>
+
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success">@TempData["SuccessMessage"]</div>
+    }
+
+    <div class="card shadow-sm border-0">
+        <div class="card-body p-0">
+            <table class="table table-hover table-bordered mb-0">
+                <thead class="table-dark text-center">
+                    <tr>
+                        <th>Mã Đơn</th>
+                        <th>Phòng</th>
+                        <th>Ngày Nhận</th>
+                        <th>Ngày Trả</th>
+                        <th>Tổng tiền (Dự kiến)</th>
+                        <th>Trạng thái</th>
+                        <th>Thao tác</th>
+                    </tr>
+                </thead>
+                <tbody class="text-center align-middle">
+                    @if (Model != null && Model.Any())
+                    {
+                        foreach (var item in Model)
+                        {
+                            <tr>
+                                <td class="fw-bold">DP-@item.MaDp</td>
+                                <td><span class="badge bg-info text-dark fs-6">@item.MapNavigation.Tenphong</span></td>
+                                <td>@item.NgayNhan.ToString("dd/MM/yyyy")</td>
+                                <td>@item.NgayTra.ToString("dd/MM/yyyy")</td>
+                                <td class="fw-bold text-danger">@item.TongTienDuKien.ToString("N0") đ</td>
+                                <td>
+                                    @if (item.Trangthai == 0)
+                                    {
+                                        <span class="badge bg-warning text-dark px-3 py-2">⏳ Chờ duyệt</span>
+                                    }
+                                    else if (item.Trangthai == 1)
+                                    {
+                                        <span class="badge bg-success px-3 py-2">✅ Đã duyệt</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-danger px-3 py-2">❌ Đã hủy</span>
+                                    }
+                                </td>
+                                <td>
+                                    @if (item.Trangthai == 0)
+                                    {
+                                        <form asp-action="Reject" asp-route-id="@item.MaDp" method="post" onsubmit="return confirm('Bạn có chắc chắn muốn hủy đơn đặt phòng này?');">
+                                            <button type="submit" class="btn btn-sm btn-outline-danger">Hủy Đơn</button>
+                                        </form>
+                                    }
+                                </td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="7" class="text-muted py-4">Bạn chưa có đơn đặt phòng nào.</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

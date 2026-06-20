@@ -24,6 +24,16 @@ namespace HotelManagement.Controllers
         public async Task<IActionResult> Index()
         {
             var rentList = await _rentRepo.GetAllAsync();
+            
+            if (User.IsInRole("Customer"))
+            {
+                var customerIdClaim = User.Claims.FirstOrDefault(c => c.Type == "CustomerId")?.Value;
+                if (int.TryParse(customerIdClaim, out int customerId))
+                {
+                    rentList = rentList.Where(r => r.Makh == customerId).ToList();
+                }
+            }
+            
             return View(rentList);
         }
 
@@ -31,6 +41,8 @@ namespace HotelManagement.Controllers
         [HttpGet]
         public async Task<IActionResult> Create(string roomName = null)
         {
+            if (User.IsInRole("Customer")) return RedirectToAction("AccessDenied", "Account");
+
             // Lấy danh sách phòng TRỐNG, kèm tên loại phòng
             var phongsAvailable = await _phongRepo.GetRoomsByTinhtrangAsync(1);
 
@@ -51,6 +63,8 @@ namespace HotelManagement.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(DateTime ngayLapPt, string cccd, string tenPhong)
         {
+            if (User.IsInRole("Customer")) return RedirectToAction("AccessDenied", "Account");
+
             // Kiểm tra CCCD khách hàng có tồn tại không
             var khach = await _khachRepo.GetClientByCCCDAsync(cccd);
             if (khach == null)
@@ -123,6 +137,8 @@ namespace HotelManagement.Controllers
         [HttpGet]
         public async Task<IActionResult> Edit(int id)
         {
+            if (User.IsInRole("Customer")) return RedirectToAction("AccessDenied", "Account");
+
             var rent = await _rentRepo.GetRentAsync(id);
             if (rent == null) return NotFound();
 
@@ -150,6 +166,8 @@ namespace HotelManagement.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, DateTime Ngaylappt, string Cccd, string TenPhong)
         {
+            if (User.IsInRole("Customer")) return RedirectToAction("AccessDenied", "Account");
+
             var rent = await _rentRepo.GetRentAsync(id);
             if (rent == null) return NotFound();
 

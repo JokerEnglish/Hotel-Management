@@ -1,0 +1,78 @@
+@model HotelManagement.ViewModels.RegisterViewModel
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Đăng ký Khách Hàng</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+</head>
+<body class="bg-light d-flex align-items-center justify-content-center" style="min-height: 100vh; padding: 20px 0;">
+
+    <!-- Nút quay lại -->
+    <a asp-controller="Home" asp-action="Index" class="btn btn-outline-secondary" style="position: absolute; top: 20px; left: 20px; border-radius: 50px; padding: 5px 20px; font-weight: bold;">
+        &larr; Quay lại
+    </a>
+    <div class="card shadow-sm p-4" style="width: 500px; border-radius: 15px;">
+        <h2 class="text-center text-primary mb-4">ĐĂNG KÝ TÀI KHOẢN</h2>
+        
+        <form asp-controller="Account" asp-action="Register" method="post">
+            <div class="mb-3">
+                <label class="form-label fw-bold">Họ và tên</label>
+                <input asp-for="Tenkh" class="form-control" placeholder="Nhập họ tên..." />
+                <span asp-validation-for="Tenkh" class="text-danger"></span>
+            </div>
+            <div class="mb-3">
+                <label class="form-label fw-bold">CMND/CCCD</label>
+                <input asp-for="Cmndkh" class="form-control" placeholder="Nhập CMND/CCCD..." />
+                <span asp-validation-for="Cmndkh" class="text-danger"></span>
+            </div>
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label class="form-label fw-bold">Tuổi</label>
+                    <input asp-for="Tuoi" type="number" class="form-control" placeholder="Tuổi..." />
+                    <span asp-validation-for="Tuoi" class="text-danger"></span>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label class="form-label fw-bold">Loại khách</label>
+                    <select asp-for="Maloaikhach" asp-items="@ViewBag.Maloaikhach" class="form-select"></select>
+                    <span asp-validation-for="Maloaikhach" class="text-danger"></span>
+                </div>
+            </div>
+            <div class="mb-3">
+                <label class="form-label fw-bold">Số điện thoại</label>
+                <input asp-for="Tel" class="form-control" placeholder="Nhập SĐT..." />
+                <span asp-validation-for="Tel" class="text-danger"></span>
+            </div>
+            <div class="mb-3">
+                <label class="form-label fw-bold">Địa chỉ</label>
+                <input asp-for="Diachikh" class="form-control" placeholder="Nhập địa chỉ..." />
+                <span asp-validation-for="Diachikh" class="text-danger"></span>
+            </div>
+            <div class="mb-3">
+                <label class="form-label fw-bold">Email</label>
+                <input asp-for="Email" class="form-control" placeholder="Nhập Email..." />
+                <span asp-validation-for="Email" class="text-danger"></span>
+            </div>
+            <div class="mb-3">
+                <label class="form-label fw-bold">Mật khẩu</label>
+                <input asp-for="MatKhau" class="form-control" placeholder="Nhập mật khẩu..." />
+                <span asp-validation-for="MatKhau" class="text-danger"></span>
+            </div>
+            
+            <button type="submit" class="btn btn-primary w-100 fw-bold fs-5 mb-2">ĐĂNG KÝ</button>
+            <div class="text-center">
+                Đã có tài khoản? <a asp-controller="Account" asp-action="Login">Đăng nhập ngay</a>
+            </div>
+        </form>
+    </div>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
+    <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
+</body>
+</html>

@@ -33,6 +33,8 @@ public partial class HotelDbContext : DbContext
 
     public virtual DbSet<Taikhoan> Taikhoans { get; set; }
 
+    public virtual DbSet<DatPhong> DatPhongs { get; set; }
+
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         => optionsBuilder.UseSqlServer("Name=ConnectionStrings:DefaultConnection");
 
@@ -94,6 +96,12 @@ public partial class HotelDbContext : DbContext
                 .HasMaxLength(30)
                 .HasColumnName("TENKH");
             entity.Property(e => e.Tuoi).HasColumnName("TUOI");
+            entity.Property(e => e.Email)
+                .HasMaxLength(100)
+                .HasColumnName("EMAIL");
+            entity.Property(e => e.MatKhau)
+                .HasMaxLength(255)
+                .HasColumnName("MATKHAU");
 
             entity.HasOne(d => d.MaloaikhachNavigation).WithMany(p => p.Khachhangs)
                 .HasForeignKey(d => d.Maloaikhach)

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 
 namespace HotelManagement.Models;
@@ -19,11 +19,15 @@ public partial class Khachhang
 
     public int Maloaikhach { get; set; }
 
-    public int Map { get; set; }
+    public int? Map { get; set; }
+
+    public string? Email { get; set; }
+
+    public string? MatKhau { get; set; }
 
     public virtual Loaikhach MaloaikhachNavigation { get; set; } = null!;
 
-    public virtual Phong MapNavigation { get; set; } = null!;
+    public virtual Phong? MapNavigation { get; set; }
 
     public virtual ICollection<Phieuthue> Phieuthues { get; set; } = new List<Phieuthue>();
 }

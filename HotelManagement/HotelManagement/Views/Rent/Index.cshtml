@@ -1,4 +1,4 @@
-﻿@model List<HotelManagement.Models.Phieuthue>
+@model List<HotelManagement.Models.Phieuthue>
 @{
     ViewData["Title"] = "Danh Sách Phiếu Thuê";
 }
@@ -7,7 +7,10 @@
     <h2 class="text-primary fw-bold mb-4">📋 DANH SÁCH PHIẾU THUÊ</h2>
 
     <div class="d-flex justify-content-start mb-4">
-        <a asp-action="Create" class="btn btn-success fw-bold shadow-sm px-4">+ Tạo Phiếu Thuê</a>
+        @if (!User.IsInRole("Customer"))
+        {
+            <a asp-action="Create" class="btn btn-success fw-bold shadow-sm px-4">+ Tạo Phiếu Thuê</a>
+        }
     </div>
 
     <div class="card shadow-sm border-0">
@@ -39,14 +42,20 @@
                                     </span>
                                 </td>
                                 <td>
-                                    <a asp-action="Edit" asp-route-id="@item.Mapt" class="btn btn-sm btn-outline-warning fw-bold mx-1">✏️ Sửa</a>
+                                    @if (!User.IsInRole("Customer"))
+                                    {
+                                        <a asp-action="Edit" asp-route-id="@item.Mapt" class="btn btn-sm btn-outline-warning fw-bold mx-1">✏️ Sửa</a>
+                                    }
                                     <a asp-action="Details" asp-route-id="@item.Mapt" class="btn btn-sm btn-outline-info fw-bold mx-1">ℹ️ Chi Tiết</a>
-                                    <form asp-action="Delete" asp-route-id="@item.Mapt" method="post"
-                                          onsubmit="return confirm('Bạn có chắc chắn muốn xóa phiếu thuê này?');"
-                                          style="display:inline;">
-                                        @Html.AntiForgeryToken()
-                                        <button type="submit" class="btn btn-sm btn-outline-danger fw-bold">🗑️ Xóa</button>
-                                    </form>
+                                    @if (!User.IsInRole("Customer"))
+                                    {
+                                        <form asp-action="Delete" asp-route-id="@item.Mapt" method="post"
+                                              onsubmit="return confirm('Bạn có chắc chắn muốn xóa phiếu thuê này?');"
+                                              style="display:inline;">
+                                            @Html.AntiForgeryToken()
+                                            <button type="submit" class="btn btn-sm btn-outline-danger fw-bold">🗑️ Xóa</button>
+                                        </form>
+                                    }
                                 </td>
                             </tr>
                         }

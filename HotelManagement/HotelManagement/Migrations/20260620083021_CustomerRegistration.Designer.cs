@@ -4,6 +4,7 @@ using HotelManagement.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace HotelManagement.Migrations
 {
     [DbContext(typeof(HotelDbContext))]
-    partial class HotelDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260620083021_CustomerRegistration")]
+    partial class CustomerRegistration
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -21,44 +24,6 @@ namespace HotelManagement.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
-
-            modelBuilder.Entity("HotelManagement.Models.DatPhong", b =>
-                {
-                    b.Property<int>("MaDp")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("MaDp"));
-
-                    b.Property<int>("Makh")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Map")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("NgayDat")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime>("NgayNhan")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime>("NgayTra")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("TongTienDuKien")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Trangthai")
-                        .HasColumnType("int");
-
-                    b.HasKey("MaDp");
-
-                    b.HasIndex("Makh");
-
-                    b.HasIndex("Map");
-
-                    b.ToTable("DatPhongs");
-                });
 
             modelBuilder.Entity("HotelManagement.Models.Hoadon", b =>
                 {
@@ -74,9 +39,6 @@ namespace HotelManagement.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)")
                         .HasColumnName("CCCD");
-
-                    b.Property<string>("HinhThucThanhToan")
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("Manv")
                         .HasColumnType("int")
@@ -425,25 +387,6 @@ namespace HotelManagement.Migrations
                     b.HasIndex("Manv");
 
                     b.ToTable("TAIKHOAN", (string)null);
-                });
-
-            modelBuilder.Entity("HotelManagement.Models.DatPhong", b =>
-                {
-                    b.HasOne("HotelManagement.Models.Khachhang", "MakhNavigation")
-                        .WithMany()
-                        .HasForeignKey("Makh")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("HotelManagement.Models.Phong", "MapNavigation")
-                        .WithMany()
-                        .HasForeignKey("Map")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("MakhNavigation");
-
-                    b.Navigation("MapNavigation");
                 });
 
             modelBuilder.Entity("HotelManagement.Models.Hoadon", b =>

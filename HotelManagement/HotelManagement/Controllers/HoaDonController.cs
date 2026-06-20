@@ -37,6 +37,16 @@ namespace HotelManagement.Controllers
         public async Task<IActionResult> Index()
         {
             var bills = await _billRepository.GetAllBills();
+            
+            if (User.IsInRole("Customer"))
+            {
+                var cccdClaim = User.Claims.FirstOrDefault(c => c.Type == "CustomerCCCD")?.Value;
+                if (!string.IsNullOrEmpty(cccdClaim))
+                {
+                    bills = bills.Where(b => b.Cccd == cccdClaim).ToList();
+                }
+            }
+            
             return View(bills);
         }
 
@@ -72,6 +82,8 @@ namespace HotelManagement.Controllers
         [Route("Create/khachhangID/{khanghangID}/rentID/{rentID}")]
         public async Task<IActionResult> CreateAsync(int khanghangID, int rentID)
         {
+            if (User.IsInRole("Customer")) return RedirectToAction("AccessDenied", "Account");
+
             var client = await _khachhangRepository.GetByIdAsync(khanghangID);
             var rent = await _rentRepository.GetRentByIDAsync(khanghangID);
             var IDrent = await _rentRepository.GetRentAsync(rentID);
@@ -114,6 +126,8 @@ namespace HotelManagement.Controllers
         }
         public async Task<IActionResult> Create()
         {
+            if (User.IsInRole("Customer")) return RedirectToAction("AccessDenied", "Account");
+
             return View();
         }
 
@@ -123,8 +137,10 @@ namespace HotelManagement.Controllers
         [Route("Create/khachhangID/{khanghangID}/rentID/{rentID}")]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Mahd,Songayo,Manv,Tongtien,Tenkh,Tenphong,Ngaylaphd,Ngaydat,Tylephuthu,Cccd")] Hoadon hoadon)
+        public async Task<IActionResult> Create([Bind("Mahd,Songayo,Manv,Tongtien,Tenkh,Tenphong,Ngaylaphd,Ngaydat,Tylephuthu,Cccd,HinhThucThanhToan")] Hoadon hoadon)
         {
+            if (User.IsInRole("Customer")) return RedirectToAction("AccessDenied", "Account");
+
             if (TempData["Mapt"] != null)
             {
                 hoadon.Mapt = (int)TempData["Mapt"];
@@ -164,6 +180,8 @@ namespace HotelManagement.Controllers
         // GET: Bill/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
+            if (User.IsInRole("Customer")) return RedirectToAction("AccessDenied", "Account");
+
             if (id == null || !(await _billRepository.BillExists(id.Value)))
             {
                 return NotFound();
@@ -178,6 +196,8 @@ namespace HotelManagement.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
+            if (User.IsInRole("Customer")) return RedirectToAction("AccessDenied", "Account");
+
             await _billRepository.DeleteBill(id);
             return RedirectToAction(nameof(Index));
         }
@@ -231,6 +251,8 @@ namespace HotelManagement.Controllers
         [Authorize]
         public async Task<IActionResult> DoanhThu(DateTime? tuNgay, DateTime? denNgay)
         {
+            if (User.IsInRole("Customer")) return RedirectToAction("AccessDenied", "Account");
+
             // Mặc định: nếu không truyền ngày, lấy tháng hiện tại
             if (!tuNgay.HasValue && !denNgay.HasValue)
             {
@@ -250,6 +272,8 @@ namespace HotelManagement.Controllers
         [Authorize]
         public async Task<IActionResult> ExportExcel(DateTime? tuNgay, DateTime? denNgay)
         {
+            if (User.IsInRole("Customer")) return RedirectToAction("AccessDenied", "Account");
+
             var excelBytes = await _billRepository.ExportDoanhThuExcelAsync(tuNgay, denNgay);
             string tenFile = $"BaoCaoDoanhThu_{DateTime.Now:yyyyMMdd_HHmmss}.xlsx";
             return File(

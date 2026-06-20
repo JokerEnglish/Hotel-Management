@@ -27,5 +27,7 @@ public partial class Hoadon
 
     public int? Mapt { get; set; }
 
+    public string? HinhThucThanhToan { get; set; }
+
     public virtual Nhanvien ManvNavigation { get; set; } = null!;
 }
