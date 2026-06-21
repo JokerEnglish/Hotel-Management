@@ -109,7 +109,13 @@ namespace HotelManagement.Repositories
             var customers = await _dbContext.Khachhangs
                 .Where(k => k.MapNavigation.Tenphong.Trim() == tenPhong.Trim() && k.Cmndkh.Trim() == CCCD.Trim())
                 .ToListAsync();
-            _dbContext.Khachhangs.RemoveRange(customers);
+            
+            // Thay vì xóa tài khoản, chỉ cần gỡ bỏ phòng (Map = null) để khách hàng có thể tiếp tục đăng nhập
+            foreach (var c in customers)
+            {
+                c.Map = null;
+            }
+            _dbContext.Khachhangs.UpdateRange(customers);
             await _dbContext.SaveChangesAsync();
         }
 
