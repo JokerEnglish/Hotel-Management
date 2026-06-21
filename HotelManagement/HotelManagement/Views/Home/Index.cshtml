@@ -75,11 +75,45 @@
         box-shadow: 0 12px 25px rgba(0,0,0,0.08);
         border-color: #e0e0e0;
     }
+    .room-image-container {
+        height: 65px;
+        width: 65px;
+        margin: 0 auto 15px auto;
+        position: relative;
+        border-radius: 50%;
+        background: #f8f9fa;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+        overflow: hidden;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+    }
+    .room-hover-img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        position: absolute;
+        top: 0;
+        left: 0;
+        opacity: 0;
+        transition: opacity 0.4s ease;
+    }
     .room-icon {
-        font-size: 2.5rem;
-        margin-bottom: 10px;
-        display: inline-block;
-        color: #2a5298;
+        font-size: 2.2rem;
+        position: absolute;
+        transition: opacity 0.3s ease;
+    }
+    .room-card:hover .room-image-container {
+        width: 100%;
+        height: 160px;
+        border-radius: 12px;
+    }
+    .room-card:hover .room-hover-img {
+        opacity: 1;
+    }
+    .room-card:hover .room-icon {
+        opacity: 0;
     }
     .room-title {
         font-weight: 700;
@@ -157,37 +191,42 @@
         <div class="room-grid">
             @foreach (var room in Model.Items)
             {
-                <div class="room-card">
-                    <div class="room-icon">🚪</div>
-                    <div class="room-title">@room.Tenphong</div>
-                    <div class="room-type">
-                        @(room.MaloaiphongNavigation != null ? room.MaloaiphongNavigation.Tenloai : "Phòng Thường")
-                        <br/>
-                        <small class="text-muted">👤 Tối đa: @room.Soluongkhachtoida người</small>
+                <!-- Vùng bọc Card để làm sự kiện Click mở Modal -->
+                <div class="room-card" data-bs-toggle="modal" data-bs-target="#modalRoom-@room.Map" style="cursor: pointer;" title="Nhấn để xem chi tiết">
+                    @{
+                        string imgUrl1 = "https://images.pexels.com/photos/164595/pexels-photo-164595.jpeg?auto=compress&cs=tinysrgb&w=600";
+                        string imgUrl2 = "https://images.pexels.com/photos/271618/pexels-photo-271618.jpeg?auto=compress&cs=tinysrgb&w=600";
+                        string imgUrl3 = "https://images.pexels.com/photos/271624/pexels-photo-271624.jpeg?auto=compress&cs=tinysrgb&w=600";
+                        if (room.MaloaiphongNavigation != null) {
+                            string loai = room.MaloaiphongNavigation.Tenloai.ToLower();
+                            if (loai.Contains("vip")) {
+                                imgUrl1 = "https://images.pexels.com/photos/271618/pexels-photo-271618.jpeg?auto=compress&cs=tinysrgb&w=600";
+                                imgUrl2 = "https://images.pexels.com/photos/1454806/pexels-photo-1454806.jpeg?auto=compress&cs=tinysrgb&w=600";
+                                imgUrl3 = "https://images.pexels.com/photos/6480198/pexels-photo-6480198.jpeg?auto=compress&cs=tinysrgb&w=600";
+                            } else if (loai.Contains("đơn")) {
+                                imgUrl1 = "https://images.pexels.com/photos/271624/pexels-photo-271624.jpeg?auto=compress&cs=tinysrgb&w=600";
+                                imgUrl2 = "https://images.pexels.com/photos/1743227/pexels-photo-1743227.jpeg?auto=compress&cs=tinysrgb&w=600";
+                                imgUrl3 = "https://images.pexels.com/photos/271619/pexels-photo-271619.jpeg?auto=compress&cs=tinysrgb&w=600";
+                            } else if (loai.Contains("đôi")) {
+                                imgUrl1 = "https://images.pexels.com/photos/164595/pexels-photo-164595.jpeg?auto=compress&cs=tinysrgb&w=600";
+                                imgUrl2 = "https://images.pexels.com/photos/1001965/pexels-photo-1001965.jpeg?auto=compress&cs=tinysrgb&w=600";
+                                imgUrl3 = "https://images.pexels.com/photos/3201758/pexels-photo-3201758.jpeg?auto=compress&cs=tinysrgb&w=600";
+                            }
+                        }
+                    }
+                    <div class="room-image-container">
+                        <img src="@imgUrl1" class="room-hover-img" alt="Room Decor" />
+                        <div class="room-icon">🚪</div>
                     </div>
-                    
-                    <div class="room-price">
-                        @(room.MaloaiphongNavigation != null ? room.MaloaiphongNavigation.Dongia.ToString("N0") + " ₫/ngày" : "Đang cập nhật")
+                    <div class="room-title">@room.Tenphong</div>
+                    <div class="room-type mb-3">
+                        @(room.MaloaiphongNavigation != null ? room.MaloaiphongNavigation.Tenloai : "Phòng Thường")
                     </div>
                     
                     <div>
                         @if (room.Tinhtrang == 1)
                         {
                             <span class="room-status status-trong mb-2">✅ Trống</span>
-                            <div class="mt-2">
-                                @if (User.IsInRole("Customer"))
-                                {
-                                    <a asp-controller="DatPhong" asp-action="Book" asp-route-roomId="@room.Map" class="btn btn-sm btn-success rounded-pill fw-bold px-4 shadow-sm w-100">
-                                        🛒 Đặt Phòng
-                                    </a>
-                                }
-                                else
-                                {
-                                    <a asp-controller="Rent" asp-action="Create" asp-route-roomName="@room.Tenphong" class="btn btn-sm btn-primary rounded-pill fw-bold px-4 shadow-sm w-100">
-                                        📝 Lập Phiếu Thuê
-                                    </a>
-                                }
-                            </div>
                         }
                         else if (room.Tinhtrang == 2)
                         {
@@ -199,6 +238,8 @@
                         }
                     </div>
                 </div>
+
+
             }
         </div>
 
@@ -236,6 +277,101 @@
         </div>
     }
 </div>
+
+<!-- Render Modals ở ngoài container có animation để không bị lỗi position: fixed -->
+@if (Model.Items.Any())
+{
+    @foreach (var room in Model.Items)
+    {
+        string imgUrl1 = "https://images.pexels.com/photos/164595/pexels-photo-164595.jpeg?auto=compress&cs=tinysrgb&w=600";
+        string imgUrl2 = "https://images.pexels.com/photos/271618/pexels-photo-271618.jpeg?auto=compress&cs=tinysrgb&w=600";
+        string imgUrl3 = "https://images.pexels.com/photos/271624/pexels-photo-271624.jpeg?auto=compress&cs=tinysrgb&w=600";
+        if (room.MaloaiphongNavigation != null) {
+            string loai = room.MaloaiphongNavigation.Tenloai.ToLower();
+            if (loai.Contains("vip")) {
+                imgUrl1 = "https://images.pexels.com/photos/271618/pexels-photo-271618.jpeg?auto=compress&cs=tinysrgb&w=600";
+                imgUrl2 = "https://images.pexels.com/photos/1454806/pexels-photo-1454806.jpeg?auto=compress&cs=tinysrgb&w=600";
+                imgUrl3 = "https://images.pexels.com/photos/6480198/pexels-photo-6480198.jpeg?auto=compress&cs=tinysrgb&w=600";
+            } else if (loai.Contains("đơn")) {
+                imgUrl1 = "https://images.pexels.com/photos/271624/pexels-photo-271624.jpeg?auto=compress&cs=tinysrgb&w=600";
+                imgUrl2 = "https://images.pexels.com/photos/1743227/pexels-photo-1743227.jpeg?auto=compress&cs=tinysrgb&w=600";
+                imgUrl3 = "https://images.pexels.com/photos/271619/pexels-photo-271619.jpeg?auto=compress&cs=tinysrgb&w=600";
+            } else if (loai.Contains("đôi")) {
+                imgUrl1 = "https://images.pexels.com/photos/164595/pexels-photo-164595.jpeg?auto=compress&cs=tinysrgb&w=600";
+                imgUrl2 = "https://images.pexels.com/photos/1001965/pexels-photo-1001965.jpeg?auto=compress&cs=tinysrgb&w=600";
+                imgUrl3 = "https://images.pexels.com/photos/3201758/pexels-photo-3201758.jpeg?auto=compress&cs=tinysrgb&w=600";
+            }
+        }
+
+        <div class="modal fade" id="modalRoom-@room.Map" tabindex="-1" aria-labelledby="modalRoomLabel-@room.Map" aria-hidden="true">
+            <div class="modal-dialog modal-lg modal-dialog-centered">
+                <div class="modal-content border-0 shadow-lg">
+                    <div class="modal-header bg-primary text-white">
+                        <h5 class="modal-title fw-bold" id="modalRoomLabel-@room.Map">🏨 Chi tiết phòng: @room.Tenphong</h5>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body p-4">
+                        <div class="row">
+                            <div class="col-md-7 mb-3 mb-md-0">
+                                <div id="carouselRoom-@room.Map" class="carousel slide shadow-sm rounded overflow-hidden" data-bs-ride="carousel">
+                                    <div class="carousel-inner">
+                                        <div class="carousel-item active">
+                                            <img src="@imgUrl1" class="d-block w-100" style="height:300px; object-fit:cover;" alt="Góc 1">
+                                        </div>
+                                        <div class="carousel-item">
+                                            <img src="@imgUrl2" class="d-block w-100" style="height:300px; object-fit:cover;" alt="Góc 2">
+                                        </div>
+                                        <div class="carousel-item">
+                                            <img src="@imgUrl3" class="d-block w-100" style="height:300px; object-fit:cover;" alt="Góc 3">
+                                        </div>
+                                    </div>
+                                    <button class="carousel-control-prev" type="button" data-bs-target="#carouselRoom-@room.Map" data-bs-slide="prev">
+                                        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                                    </button>
+                                    <button class="carousel-control-next" type="button" data-bs-target="#carouselRoom-@room.Map" data-bs-slide="next">
+                                        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="col-md-5">
+                                <h4 class="text-primary fw-bold mb-3 border-bottom pb-2">Thông tin phòng</h4>
+                                <p class="mb-2"><i class="bi bi-tag-fill text-warning me-2"></i> <strong>Loại phòng:</strong> @(room.MaloaiphongNavigation != null ? room.MaloaiphongNavigation.Tenloai : "Phòng Thường")</p>
+                                <p class="mb-2"><i class="bi bi-people-fill text-info me-2"></i> <strong>Số người tối đa:</strong> @room.Soluongkhachtoida người</p>
+                                <p class="mb-2"><i class="bi bi-cash-coin text-success me-2"></i> <strong>Giá phòng:</strong> <span class="text-danger fw-bold fs-5">@(room.MaloaiphongNavigation != null ? room.MaloaiphongNavigation.Dongia.ToString("N0") + " đ/ngày" : "Đang cập nhật")</span></p>
+                                <p class="mb-3"><i class="bi bi-info-circle-fill text-secondary me-2"></i> <strong>Tình trạng:</strong> 
+                                    @if (room.Tinhtrang == 1) { <span class="badge bg-success fs-6">Trống</span> }
+                                    else if (room.Tinhtrang == 2) { <span class="badge bg-danger fs-6">Đang Thuê</span> }
+                                    else { <span class="badge bg-warning text-dark fs-6">Bảo Trì</span> }
+                                </p>
+                                <div class="p-3 bg-light rounded text-muted fs-6">
+                                    <i class="bi bi-star-fill text-warning"></i> <strong>Mô tả:</strong> @(string.IsNullOrEmpty(room.Ghichu) ? "Phòng có đầy đủ tiện nghi, wifi miễn phí, tivi, máy lạnh và có cửa sổ view thoáng mát." : room.Ghichu)
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer bg-light">
+                        <button type="button" class="btn btn-secondary fw-bold" data-bs-dismiss="modal">Đóng</button>
+                        @if (room.Tinhtrang == 1)
+                        {
+                            @if (User.IsInRole("ADMIN") || User.IsInRole("STAFF") || User.IsInRole("NHANVIEN"))
+                            {
+                                <a asp-controller="Rent" asp-action="Create" asp-route-roomName="@room.Tenphong" class="btn btn-primary fw-bold px-4 shadow-sm">
+                                    📝 Lập Phiếu Thuê
+                                </a>
+                            }
+                            else
+                            {
+                                <a asp-controller="DatPhong" asp-action="Book" asp-route-roomId="@room.Map" class="btn btn-success fw-bold px-4 shadow-sm">
+                                    🛒 Đặt Phòng
+                                </a>
+                            }
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+}
 
 <script>
     document.addEventListener("DOMContentLoaded", function () {
